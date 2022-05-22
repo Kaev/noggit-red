@@ -5,7 +5,7 @@
 
 #include <noggit/project/ApplicationProject.h>
 #include <noggit/ui/windows/projectSelection/NoggitProjectSelectionWindow.hpp>
-
+#include <noggit/database/NoggitDatabaseCreator.h>	
 #include <QMessageBox>
 
 namespace Noggit::Ui::Component

@@ -7,6 +7,8 @@
 #include <QMenuBar>
 #include <QAction>
 #include <QObject>
+#include <noggit/database/repositories/map/_seed.h>
+#include <noggit/database/NoggitDatabaseCreator.h>
 
 using namespace Noggit::Ui::Component;
 
@@ -14,54 +16,42 @@ void BuildMapListComponent::buildMapList(Noggit::Ui::Windows::NoggitWindow* pare
 {
   parent->_continents_table->clear();
 
-  const auto& table = std::string("Map");
-  auto map_table = parent->_project->ClientDatabase->LoadTable(table, readFileAsIMemStream);
-
-  auto iterator = map_table.Records();
+  auto mapRepository = Noggit::Database::Repositories::WotlkMapRepository(parent->_project->databasePath);
   auto pinned_maps = std::vector<Widget::MapListData>();
-  auto maps = std::vector<Widget::MapListData>();
-  while (iterator.HasRecords())
+  auto mapList = std::vector<Widget::MapListData>();
+
+  auto maps = mapRepository.GetMapList();
+  for (auto & map : maps)
   {
-    auto record = iterator.Next();
+      Widget::MapListData map_list_data{};
+      map_list_data.map_name = QString::fromUtf8(map.map_name[Locale::enUS].c_str());
+      map_list_data.map_id = map.map_id;
+      map_list_data.map_type_id = map.map_type_id;
+      map_list_data.expansion_id = map.expansion_id;
 
-    Widget::MapListData map_list_data{};
+      if (!World::IsEditableWorld(map.file_path, map.map_id))
+          continue;
 
-    for (auto const& value: record.Columns["MapName_lang"].Values)
-    {
-      if (value.empty())
-        continue;
+        auto project_pinned_maps = parent->_project->PinnedMaps;
 
-      map_list_data.map_name = QString::fromUtf8(value.c_str());
-      break;
-    }
-
-    map_list_data.map_id = record.RecordId;
-    map_list_data.map_type_id = std::stoi(record.Columns["InstanceType"].Value);
-    map_list_data.expansion_id = std::stoi(record.Columns["ExpansionID"].Value);
-
-    if (map_list_data.map_type_id < 0 || map_list_data.map_type_id > 5 || !World::IsEditableWorld(record))
-      continue;
-
-    auto project_pinned_maps = parent->_project->PinnedMaps;
-
-    auto pinned_map_found = std::find_if(std::begin(project_pinned_maps), std::end(project_pinned_maps),
+        auto pinned_map_found = std::find_if(std::begin(project_pinned_maps), std::end(project_pinned_maps),
                                          [&](Project::NoggitProjectPinnedMap pinned_map)
                                        {
                                          return pinned_map.MapId == map_list_data.map_id;
                                        });
 
-    if (pinned_map_found != std::end(project_pinned_maps))
-    {
-      map_list_data.pinned = true;
-      pinned_maps.push_back(map_list_data);
-    }
-    else
-    {
-      maps.push_back(map_list_data);
-    }
+        if (pinned_map_found != std::end(project_pinned_maps))
+        {
+            map_list_data.pinned = true;
+            pinned_maps.push_back(map_list_data);
+        }
+        else
+        {
+            mapList.push_back(map_list_data);
+        }
   }
 
-  pinned_maps.insert(pinned_maps.end(), maps.begin(), maps.end());
+  pinned_maps.insert(pinned_maps.end(), mapList.begin(), mapList.end());
 
   for (auto const& map: pinned_maps)
   {
@@ -114,6 +104,4 @@ void BuildMapListComponent::buildMapList(Noggit::Ui::Windows::NoggitWindow* pare
     item->setData(Qt::UserRole, QVariant(map.map_id));
     parent->_continents_table->setItemWidget(item, map_list_item);
   }
-
-  parent->_project->ClientDatabase->UnloadTable(table);
 }

@@ -39,17 +39,16 @@
 #include <glm/gtx/quaternion.hpp>
 
 
-bool World::IsEditableWorld(BlizzardDatabaseLib::Structures::BlizzardDatabaseRow& record)
+bool World::IsEditableWorld(const std::string& directory,int mapId)
 {
   ZoneScoped;
-  std::string lMapName = record.Columns["Directory"].Value;
-
+ 
   std::stringstream ssfilename;
-  ssfilename << "World\\Maps\\" << lMapName << "\\" << lMapName << ".wdt";
+  ssfilename << "World\\Maps\\" << directory << "\\" << directory << ".wdt";
 
   if (!Noggit::Application::NoggitApplication::instance()->clientData()->exists(ssfilename.str()))
   {
-    Log << "World " << record.RecordId << ": " << lMapName << " has no WDT file!" << std::endl;
+    Log << "World " << mapId << ": " << directory << " has no WDT file!" << std::endl;
     return false;
   }
 

@@ -23,8 +23,27 @@ void CreateProjectComponent::createProject(Noggit::Ui::Windows::NoggitProjectSel
     }
   }
 
+  auto projectDatabasePath = project_information.project_path + "\\database.db";
+  if (!std::filesystem::exists(projectDatabasePath))
+  {
+      auto buildInformation = Noggit::Project::ClientVersionFactory::mapToProjectBuildInformation(project_information.game_client_version);
+      auto databaseCreator = Noggit::Database::ApplicationProjectDatabase(application_configuration, Noggit::Tables);
+
+      databaseCreator.CreateDatabase(projectDatabasePath,
+          project_information.project_path,
+          project_information.game_client_path,
+          buildInformation);
+
+      //Only here for debugging
+      //databaseCreator.ExportDatabase(projectDatabasePath,
+      //    project_information.project_path,
+      //    project_information.game_client_path,
+      //    buildInformation);
+  }
+
   application_project_service.createProject(project_information.project_path,
                                             project_information.game_client_path,
+                                 projectDatabasePath,
                                             project_information.game_client_version,
                                             project_information.project_name);
 

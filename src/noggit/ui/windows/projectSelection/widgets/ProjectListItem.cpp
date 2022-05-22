@@ -7,9 +7,9 @@ namespace Noggit::Ui::Widget
     auto layout = QGridLayout();
 
     QIcon icon;
-    if (data.project_version == Project::ProjectVersion::WOTLK)
+    if (data.project_version == ProjectVersion::WOTLK)
       icon = QIcon(":/icon-wrath");
-    if (data.project_version == Project::ProjectVersion::SL)
+    if (data.project_version == ProjectVersion::SL)
       icon = QIcon(":/icon-shadow");
     _project_version_icon = new QLabel("", parent);
     _project_version_icon->setPixmap(icon.pixmap(QSize(48, 48)));
@@ -35,9 +35,9 @@ namespace Noggit::Ui::Widget
     _project_directory_label->setAutoFillBackground(true);
 
     QString version;
-    if (data.project_version == Project::ProjectVersion::WOTLK)
+    if (data.project_version == ProjectVersion::WOTLK)
       version = "Wrath Of The Lich King";
-    if (data.project_version == Project::ProjectVersion::SL)
+    if (data.project_version == ProjectVersion::SL)
       version = "Shadowlands";
 
     _project_version_label = new QLabel(version, parent);

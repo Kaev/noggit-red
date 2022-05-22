@@ -16,7 +16,7 @@ namespace Noggit::Ui::Widget
         QString project_name;
         QString project_directory;
         QString project_last_edited;
-        Project::ProjectVersion project_version;
+        ProjectVersion project_version;
     };
 
     class ProjectListItem : public QWidget

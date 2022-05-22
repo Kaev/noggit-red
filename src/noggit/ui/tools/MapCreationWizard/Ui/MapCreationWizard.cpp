@@ -85,8 +85,8 @@ MapCreationWizard::MapCreationWizard(std::shared_ptr<Project::NoggitProject> pro
       std::string name = record.Columns["MapName_lang"].Value;
       int area_type = std::stoi(record.Columns["InstanceType"].Value);
 
-      if (area_type < 0 || area_type > 4 || !World::IsEditableWorld(record))
-          continue;
+      //if (area_type < 0 || area_type > 4 || !World::IsEditableWorld(record))
+      //    continue;
 
       _corpse_map_id->addItem(QString::number(map_id) + " - " + QString::fromUtf8(name.c_str()));
       _corpse_map_id->setItemData(count + 1, QVariant(map_id));

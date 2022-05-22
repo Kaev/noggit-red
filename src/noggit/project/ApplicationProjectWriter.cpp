@@ -21,10 +21,13 @@ namespace Noggit::Project
     auto root = QJsonObject();
     auto project_configuration = QJsonObject();
     auto client_configuration = QJsonObject();
+    auto database_configuration = QJsonObject();
 
     client_configuration.insert("ClientPath", project->ClientPath.c_str());
     client_configuration.insert("ClientVersion",
                                 ClientVersionFactory::MapToStringVersion(project->projectVersion).c_str());
+
+    database_configuration.insert("Path", project->databasePath.c_str());
 
     auto pinned_maps = QJsonArray();
     for (auto const& pinnedMap: project->PinnedMaps)
@@ -56,6 +59,7 @@ namespace Noggit::Project
     project_configuration.insert("Bookmarks", bookmarks);
     project_configuration.insert("ProjectName", project->ProjectName.c_str());
     project_configuration.insert("Client", client_configuration);
+    project_configuration.insert("Database", database_configuration);
 
     root.insert("Project", project_configuration);
     document.setObject(root);

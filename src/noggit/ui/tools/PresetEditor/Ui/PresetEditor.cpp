@@ -87,8 +87,8 @@ PresetEditorWidget::PresetEditorWidget(std::shared_ptr<Project::NoggitProject> p
       std::string name = record.Columns["MapName_lang"].Value;
       int area_type = std::stoi(record.Columns["InstanceType"].Value);
 
-      if (area_type < 0 || area_type > 4 || !World::IsEditableWorld(record))
-          continue;
+      //if (area_type < 0 || area_type > 4 || !World::IsEditableWorld(record))
+      //    continue;
 
       ui->worldSelector->addItem(QString::number(map_id) + " - " + QString::fromUtf8(name.c_str()));
       ui->worldSelector->setItemData(count, QVariant(map_id), Qt::UserRole);

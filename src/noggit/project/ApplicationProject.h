@@ -27,27 +27,18 @@
 #include <chrono>
 #include <cassert>
 #include <glm/vec3.hpp>
-
+#include <SQLiteCpp/SQLiteCpp.h>
+#include <noggit/types/NoggitTypes.h>
+#include <noggit/database/NoggitDatabaseCreator.h>
+#include <noggit/database/repositories/schema/_seed.h>
 #include "ApplicationProjectReader.h"
 #include "ApplicationProjectWriter.h"
 
 namespace Noggit::Project
 {
-  enum class ProjectVersion
-  {
-    VANILLA,
-    BC,
-    WOTLK,
-    CATA,
-    PANDARIA,
-    WOD,
-    LEGION,
-    BFA,
-    SL
-  };
-
   struct ClientVersionFactory
   {
+     
     static ProjectVersion mapToEnumVersion(std::string const& projectVersion)
     {
       if (projectVersion == "Wrath Of The Lich King")
@@ -56,6 +47,31 @@ namespace Noggit::Project
         return ProjectVersion::SL;
 
       assert(false);
+    }
+
+    static ProjectBuildInformation mapToProjectBuildInformation(std::string const& projectVersion)
+    {
+        auto version = mapToEnumVersion(projectVersion);
+        auto buildInformation = ProjectBuildInformation();
+        buildInformation.Version = version;
+
+        if (version == ProjectVersion::WOTLK)
+        {
+            buildInformation.Expansion = 3;
+            buildInformation.Major = 3;
+            buildInformation.Minor = 5;
+            buildInformation.Patch = 12340;   
+        }
+
+        if (version == ProjectVersion::SL)
+        {
+            buildInformation.Expansion = 9;
+            buildInformation.Major = 1;
+            buildInformation.Minor = 0;
+            buildInformation.Patch = 39584;
+        }
+
+        return buildInformation;
     }
 
     static std::string MapToStringVersion(ProjectVersion const& projectVersion)
@@ -91,6 +107,7 @@ namespace Noggit::Project
     std::string ProjectPath;
     std::string ProjectName;
     std::string ClientPath;
+    std::string databasePath;
     ProjectVersion projectVersion;
     std::vector<NoggitProjectPinnedMap> PinnedMaps;
     std::vector<NoggitProjectBookmarkMap> Bookmarks;
@@ -160,7 +177,7 @@ namespace Noggit::Project
       _configuration = configuration;
     }
 
-    void createProject(std::filesystem::path const& project_path, std::filesystem::path const& client_path,
+    void createProject(std::filesystem::path const& project_path, std::filesystem::path const& client_path, std::filesystem::path const& database_path,
                        std::string const& client_version, std::string const& project_name)
     {
       if (!std::filesystem::exists(project_path))
@@ -171,10 +188,10 @@ namespace Noggit::Project
       project.projectVersion = ClientVersionFactory::mapToEnumVersion(client_version);
       project.ClientPath = client_path.generic_string();
       project.ProjectPath = project_path.generic_string();
+      project.databasePath = database_path.generic_string();
 
       auto project_writer = ApplicationProjectWriter();
       project_writer.saveProject(&project, project_path);
-
 
     }
 
@@ -183,27 +200,50 @@ namespace Noggit::Project
       ApplicationProjectReader project_reader{};
       auto project = project_reader.readProject(project_path);
 
-      if(!project.has_value())
-        return {};
-
-      std::string dbd_file_directory = _configuration->ApplicationDatabaseDefinitionsPath;
-
       BlizzardDatabaseLib::Structures::Build client_build("3.3.5.12340");
       auto client_archive_version = BlizzardArchive::ClientVersion::WOTLK;
       auto client_archive_locale = BlizzardArchive::Locale::AUTO;
       if (project->projectVersion == ProjectVersion::SL)
       {
-        client_archive_version = BlizzardArchive::ClientVersion::SL;
-        client_build = BlizzardDatabaseLib::Structures::Build("9.1.0.39584");
-        client_archive_locale = BlizzardArchive::Locale::enUS;
+          client_archive_version = BlizzardArchive::ClientVersion::SL;
+          client_build = BlizzardDatabaseLib::Structures::Build("9.1.0.39584");
+          client_archive_locale = BlizzardArchive::Locale::enUS;
       }
 
-      if (project->projectVersion == ProjectVersion::WOTLK)
+      if(!project.has_value())
+        return {};
+
+      //Wotlk only right now
+      auto projectBuildInforamtion = Noggit::ProjectBuildInformation();
+      projectBuildInforamtion.Expansion = 3;
+      projectBuildInforamtion.Major = 3;
+      projectBuildInforamtion.Minor = 5;
+      projectBuildInforamtion.Patch = 12340;
+      projectBuildInforamtion.Version = ProjectVersion::WOTLK;
+
+      auto databasePath = project_path / "database.db";
+      //If old project with no database, build one
+      if (project.value().databasePath == "")
       {
-        client_archive_version = BlizzardArchive::ClientVersion::WOTLK;
-        client_build = BlizzardDatabaseLib::Structures::Build("3.3.5.12340");
-        client_archive_locale = BlizzardArchive::Locale::AUTO;
+          auto databaseCreator = Noggit::Database::ApplicationProjectDatabase(_configuration, Noggit::Tables);
+          databaseCreator.CreateDatabase(databasePath, project_path, project->ClientPath, projectBuildInforamtion);
+
+          auto project_writer = ApplicationProjectWriter();
+          project.value().databasePath = databasePath.generic_string();
+          project_writer.saveProject(&project.value(), project_path);
       }
+
+      //if database is missing Table load table in
+      auto schemaRepository = new Noggit::Database::Repositories::SchemaRepository(databasePath);
+      auto missingTables = schemaRepository->GetMissingTables(Noggit::Tables);
+      if (missingTables.size() > 0)
+      {
+          auto databaseCreator = Noggit::Database::ApplicationProjectDatabase(_configuration, missingTables);
+          databaseCreator.CreateDatabase(databasePath, project_path, project->ClientPath, projectBuildInforamtion);
+      }
+
+    
+      std::string dbd_file_directory = _configuration->ApplicationDatabaseDefinitionsPath;
 
       project->ClientDatabase = std::make_shared<BlizzardDatabaseLib::BlizzardDatabase>(dbd_file_directory, client_build);
 

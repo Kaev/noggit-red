@@ -70,6 +70,16 @@ namespace Noggit::Project
             }
           }
 
+          if (project_configuration.contains("Database") && project_configuration["Database"].isObject())
+          {
+              auto project_database_configuration = project_configuration["Database"].toObject();
+
+              if (project_database_configuration.contains("Path"))
+              {
+                  project.databasePath = project_database_configuration["Path"].toString().toStdString();
+              }
+          }
+
           if (project_configuration.contains("Client") && project_configuration["Client"].isObject())
           {
             auto project_client_configuration = project_configuration["Client"].toObject();
@@ -83,15 +93,15 @@ namespace Noggit::Project
             {
               auto client_version = project_client_configuration["ClientVersion"].toString().toStdString();
 
-              auto client_version_enum = Noggit::Project::ProjectVersion::WOTLK;
+              auto client_version_enum = Noggit::ProjectVersion::WOTLK;
               if (client_version == std::string("Shadowlands"))
               {
-                client_version_enum = Noggit::Project::ProjectVersion::SL;
+                client_version_enum = Noggit::ProjectVersion::SL;
               }
 
               if (client_version == std::string("Wrath Of The Lich King"))
               {
-                client_version_enum = Noggit::Project::ProjectVersion::WOTLK;
+                client_version_enum = Noggit::ProjectVersion::WOTLK;
               }
 
               project.projectVersion = client_version_enum;
