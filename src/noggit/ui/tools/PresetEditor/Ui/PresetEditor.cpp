@@ -14,7 +14,7 @@ PresetEditorWidget::PresetEditorWidget(std::shared_ptr<Project::NoggitProject> p
 
   auto body = new QWidget(this);
   ui = new ::Ui::PresetEditor;
-  ui->setupUi(body);
+  ui->setupUi(project,body);
   setCentralWidget(body);
 
   setWindowFlags(windowFlags() | Qt::Tool | Qt::WindowStaysOnTopHint);

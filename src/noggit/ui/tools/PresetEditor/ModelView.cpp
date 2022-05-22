@@ -6,11 +6,12 @@
 
 using namespace Noggit::Ui::Tools::PresetEditor;
 
-ModelViewer::ModelViewer(QWidget *parent)
+ModelViewer::ModelViewer(std::shared_ptr<Noggit::Project::NoggitProject> project, QWidget *parent)
 : AssetBrowser::ModelViewer(parent, Noggit::NoggitRenderContext::PRESET_EDITOR)
 , _world(nullptr)
 , _world_camera(_camera.position, _camera.yaw(), _camera.pitch())
 , _transform_gizmo(Noggit::Ui::Tools::ViewportGizmo::GizmoContext::PRESET_EDITOR)
+,_project(project)
 {
 }
 
@@ -115,7 +116,7 @@ void ModelViewer::loadWorldUnderlay(const std::string& internal_name, int map_id
   }
   else
   {
-    _world = std::make_unique<World> (internal_name, map_id,
+    _world = std::make_unique<World> (_project,internal_name, map_id,
                                       Noggit::NoggitRenderContext::PRESET_EDITOR);
   }
 

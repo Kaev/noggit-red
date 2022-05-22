@@ -75,8 +75,8 @@ bool World::IsEditableWorld(const std::string& directory,int mapId)
   return false;
 }
 
-World::World(const std::string& name, int map_id, Noggit::NoggitRenderContext context, bool create_empty)
-    : _renderer(Noggit::Rendering::WorldRender(this))
+World::World(std::shared_ptr<Noggit::Project::NoggitProject> project, const std::string& name, int map_id, Noggit::NoggitRenderContext context, bool create_empty)
+    : _renderer(Noggit::Rendering::WorldRender(project, this))
     , _model_instance_storage(this)
     , _tile_update_queue(this)
     , mapIndex(name, map_id, this, context, create_empty)

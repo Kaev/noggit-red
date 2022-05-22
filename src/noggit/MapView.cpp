@@ -741,7 +741,7 @@ void MapView::setupHoleCutterUi()
 
 void MapView::setupAreaDesignatorUi()
 {
-  ZoneIDBrowser = new Noggit::Ui::zone_id_browser(this);
+  ZoneIDBrowser = new Noggit::Ui::zone_id_browser(_project,this);
   _tool_panel_dock->registerTool("Area Designator", ZoneIDBrowser);
 
   ZoneIDBrowser->setMapID(_world->getMapID());

@@ -47,7 +47,7 @@ namespace Noggit
         void fill(DBCFile::Record& record, size_t field);
         void fill(Noggit::LocaleString& record);
         void clear();
-        void toRecord(DBCFile::Record& record, size_t field);
+        void toRecord(Noggit::LocaleString& record);
 
       private:
         QComboBox* _current_locale;

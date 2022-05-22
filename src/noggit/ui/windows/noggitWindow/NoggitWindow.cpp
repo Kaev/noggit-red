@@ -186,7 +186,7 @@ namespace Noggit::Ui::Windows
     _world.reset();
 
     auto directory = _project->ClientDatabase->MapRepository->GetMapDirectory(map_id);
-    _world = std::make_unique<World>(directory, map_id, Noggit::NoggitRenderContext::MAP_VIEW);
+    _world = std::make_unique<World>(_project,directory, map_id, Noggit::NoggitRenderContext::MAP_VIEW);
 
     _minimap->world(_world.get());
 
@@ -241,23 +241,16 @@ namespace Noggit::Ui::Windows
 
     QObject::connect(bookmarks_table, &QListWidget::itemDoubleClicked, [this](QListWidgetItem* item)
                      {
+                        auto& entry(_project->Bookmarks.at(item->data(Qt::UserRole).toInt()));
+                        _world.reset();
 
-                       auto& entry(_project->Bookmarks.at(item->data(Qt::UserRole).toInt()));
+                        auto map = _project->ClientDatabase->MapRepository->GetMapById(entry.map_id);
 
-                       _world.reset();
+                        _world = std::make_unique<World>(_project,map.Directory, entry.map_id, Noggit::NoggitRenderContext::MAP_VIEW);
 
-                       for (DBCFile::Iterator it = gMapDB.begin(); it != gMapDB.end(); ++it)
-                       {
-                         if (it->getInt(MapDB::MapID) == entry.map_id)
-                         {
-                           _world = std::make_unique<World>(it->getString(MapDB::InternalName),
-                                                            entry.map_id, Noggit::NoggitRenderContext::MAP_VIEW);
-                           check_uid_then_enter_map(entry.position, math::degrees(entry.camera_pitch), math::degrees(entry.camera_yaw),
-                                                    true
-                           );
-                           return;
-                         }
-                       }
+                        check_uid_then_enter_map(entry.position, math::degrees(entry.camera_pitch), math::degrees(entry.camera_yaw), true);
+
+                        return;
                      }
     );
 

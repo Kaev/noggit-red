@@ -24,25 +24,6 @@ public:
   static std::uint32_t get_area_parent(int area_id);
 };
 
-class MapDB : public DBCFile
-{
-public:
-  MapDB() :
-    DBCFile("DBFilesClient\\Map.dbc")
-  { }
-
-  /// Fields
-  static const size_t MapID = 0;        // uint
-  static const size_t InternalName = 1;    // string
-  static const size_t AreaType = 2;      // uint
-  static const size_t IsBattleground = 4;    // uint
-  static const size_t Name = 5;        // loc
-
-  static const size_t LoadingScreen = 57;    // uint [LoadingScreen]
-  static std::string getMapName(int pMapID);
-  static int findMapName(const std::string& map_name);
-};
-
 class LoadingScreensDB : public DBCFile
 {
 public:
@@ -189,7 +170,6 @@ void OpenDBs(std::shared_ptr<BlizzardArchive::ClientData> clientData);
 const char * getGroundEffectDoodad(unsigned int effectID, int DoodadNum);
 
 extern AreaDB gAreaDB;
-extern MapDB gMapDB;
 extern LoadingScreensDB gLoadingScreensDB;
 extern LightDB gLightDB;
 extern LightParamsDB gLightParamsDB;

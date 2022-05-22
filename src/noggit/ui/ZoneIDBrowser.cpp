@@ -17,10 +17,8 @@ namespace Noggit
 {
   namespace Ui
   {
-    zone_id_browser::zone_id_browser(QWidget* parent)
-      : QWidget(parent)
-      , _area_tree(new QTreeWidget())
-      , mapID(-1)
+    zone_id_browser::zone_id_browser(std::shared_ptr<Noggit::Project::NoggitProject> project, QWidget* parent)
+      : QWidget(parent), _project(project), _area_tree(new QTreeWidget()), mapID(-1)
     {
       auto layout = new QFormLayout(this);
 
@@ -74,15 +72,11 @@ namespace Noggit
     {
       mapID = id;
 
-      for (DBCFile::Iterator i = gMapDB.begin(); i != gMapDB.end(); ++i)
-      {
-        if (i->getInt(MapDB::MapID) == id)
-        {
-          std::stringstream ss;
-          ss << id << "-" << i->getString(MapDB::InternalName);
-          _area_tree->setHeaderLabel(ss.str().c_str());
-        }
-      }
+      auto mapRecord = _project->ClientDatabase->MapRepository->GetMapById(id);
+
+      std::stringstream ss;
+      ss << id << "-" << mapRecord.Directory;
+      _area_tree->setHeaderLabel(ss.str().c_str());
 
       buildAreaList();
     }

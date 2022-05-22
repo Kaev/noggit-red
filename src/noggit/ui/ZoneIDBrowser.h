@@ -6,7 +6,7 @@
 #include <QtWidgets/QTreeWidget>
 #include <QtWidgets/QDoubleSpinBox>
 #include <QtWidgets/QSlider>
-
+#include <noggit/project/ApplicationProject.h>
 #include <functional>
 #include <string>
 
@@ -19,7 +19,7 @@ namespace Noggit
       Q_OBJECT
 
     public:
-      zone_id_browser(QWidget* parent = nullptr);
+      zone_id_browser(std::shared_ptr<Noggit::Project::NoggitProject> project, QWidget* parent = nullptr);
       void setMapID(int id);
       void setZoneID(int id);
       void changeRadius(float change);
@@ -35,7 +35,7 @@ namespace Noggit
 
       QSlider* _radius_slider;
       QDoubleSpinBox* _radius_spin;
-
+      std::shared_ptr<Noggit::Project::NoggitProject> _project;
       std::map<int, QTreeWidgetItem*> _items;
       int mapID;
       float _radius = 15.0f;

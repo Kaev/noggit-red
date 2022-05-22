@@ -7,7 +7,6 @@
 #include <string>
 
 AreaDB gAreaDB;
-MapDB gMapDB;
 LoadingScreensDB gLoadingScreensDB;
 LightDB gLightDB;
 LightParamsDB gLightParamsDB;
@@ -21,7 +20,6 @@ LiquidTypeDB gLiquidTypeDB;
 void OpenDBs(std::shared_ptr<BlizzardArchive::ClientData> clientData)
 {
   gAreaDB.open(clientData);
-  gMapDB.open(clientData);
   gLoadingScreensDB.open(clientData);
   gLightDB.open(clientData);
   gLightParamsDB.open(clientData);
@@ -89,36 +87,6 @@ std::uint32_t AreaDB::get_area_parent(int area_id)
   }
 }
 
-std::string MapDB::getMapName(int pMapID)
-{
-  if (pMapID<0) return "Unknown map";
-  std::string mapName = "";
-  try
-  {
-    MapDB::Record rec = gMapDB.getByID(pMapID);
-    mapName = std::string(rec.getLocalizedString(MapDB::Name));
-  }
-  catch (MapDB::NotFound)
-  {
-    mapName = "Unknown map";
-  }
-
-  return mapName;
-}
-
-int MapDB::findMapName(const std::string &map_name)
-{
-  for (Iterator i = gMapDB.begin(); i != gMapDB.end(); ++i)
-  {
-    if (i->getString(MapDB::InternalName) == map_name)
-    {
-      return static_cast<int>(i->getUInt(MapDB::MapID));
-    }
-  }
-
-  return -1;
-}
-
 const char * getGroundEffectDoodad(unsigned int effectID, int DoodadNum)
 {
   try
@@ -156,7 +124,7 @@ std::string  LiquidTypeDB::getLiquidName(int pID)
     LiquidTypeDB::Record rec = gLiquidTypeDB.getByID(pID);
     type = std::string(rec.getString(LiquidTypeDB::Name));
   }
-  catch (MapDB::NotFound)
+  catch (LiquidTypeDB::NotFound)
   {
     type = "Unknown type";
   }

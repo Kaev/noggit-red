@@ -13,12 +13,13 @@
 
 using namespace Noggit::Rendering;
 
-WorldRender::WorldRender(World* world)
+WorldRender::WorldRender(std::shared_ptr<Noggit::Project::NoggitProject> project, World* world)
 : BaseRender()
 , _world(world)
 , _liquid_texture_manager(world->_context)
 , _view_distance(world->_settings->value("view_distance", 1000.f).toFloat())
 , _cull_distance(0.f)
+, _project(project)
 {
 }
 
@@ -1646,12 +1647,12 @@ bool WorldRender::saveMinimap(TileIndex const& tile_idx, MinimapRenderSettings* 
     }
 
     // Register in md5translate.trs
-    std::string map_name = gMapDB.getByID(_world->mapIndex._map_id).getString(MapDB::InternalName);
 
+    auto map = _project->ClientDatabase->MapRepository->GetMapById(_world->mapIndex._map_id);
     auto sstream = std::stringstream();
-    sstream << map_name << "\\map" << std::setfill('0') << std::setw(2) << tile_idx.x << "_" << std::setfill('0') << std::setw(2) << tile_idx.z << ".blp";
+    sstream << map.Directory << "\\map" << std::setfill('0') << std::setw(2) << tile_idx.x << "_" << std::setfill('0') << std::setw(2) << tile_idx.z << ".blp";
     std::string tilename_left = sstream.str();
-    _world->mapIndex._minimap_md5translate[map_name][tilename_left] = tex_name;
+    _world->mapIndex._minimap_md5translate[map.Directory][tilename_left] = tex_name;
 
     if (unload)
     {

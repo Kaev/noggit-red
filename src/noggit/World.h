@@ -79,7 +79,7 @@ public:
   //! \brief Name of this map.
   std::string basename;
 
-  explicit World(const std::string& name, int map_id, Noggit::NoggitRenderContext context, bool create_empty = false);
+  explicit World(std::shared_ptr<Noggit::Project::NoggitProject> project, const std::string& name, int map_id, Noggit::NoggitRenderContext context, bool create_empty = false);
 
   void setBasename(const std::string& name);
 

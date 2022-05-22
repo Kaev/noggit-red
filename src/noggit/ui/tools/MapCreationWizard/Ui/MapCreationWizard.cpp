@@ -321,7 +321,7 @@ void MapCreationWizard::selectMap(int map_id)
 
   auto mapEntry = _project->ClientDatabase->MapRepository->GetMapById(map_id);
 
-  _world = new World(mapEntry.Directory, map_id, Noggit::NoggitRenderContext::MAP_VIEW);
+  _world = new World(_project,mapEntry.Directory, map_id, Noggit::NoggitRenderContext::MAP_VIEW);
   _minimap_widget->world(_world);
   _directory->setText(QString::fromStdString(mapEntry.Directory));
   _directory->setEnabled(false);
@@ -388,9 +388,9 @@ void MapCreationWizard::saveCurrentEntry()
     auto map_internal_name = _directory->text().toStdString();
 
     // Check if map with that name already exists
-    int id = gMapDB.findMapName(map_internal_name);
+    bool mapFound = _project->ClientDatabase->MapRepository->DoesMapAlreadyExistWithName(map_internal_name);
 
-    if (id >= 0)
+    if (mapFound)
     {
       QMessageBox prompt;
       prompt.setIcon (QMessageBox::Warning);
@@ -429,28 +429,55 @@ void MapCreationWizard::saveCurrentEntry()
   _world->mapIndex.saveChanged(_world, true);
   _world->mapIndex.save();
 
-  // Save Map.dbc record
-  DBCFile::Record record = _is_new_record ? gMapDB.addRecord(_cur_map_id) : gMapDB.getByID(_cur_map_id);
+  if (_is_new_record)
+  {
+      auto newMap = Noggit::Database::Repositories::MapEntry();
+      newMap.Directory = _directory->text().toStdString();
+      newMap.InstanceType = _instance_type->itemData(_instance_type->currentIndex()).toInt();
+      newMap.AreaTableId = _area_table_id->value();
+      newMap.LoadingScreenId = _loading_screen->value();
+      newMap.CorpseMapId = _corpse_map_id->itemData(_corpse_map_id->currentIndex()).toInt();
+      newMap.TimeDayOverride = _time_of_day_override->value();
+      newMap.ExpansionId = _expansion_id->itemData(_expansion_id->currentIndex()).toInt();
+      newMap.RaidOffset = _raid_offset->value();
+      newMap.MaxPlayers = _max_players->value();
+      newMap.MiniMapScale = static_cast<float>(_minimap_icon_scale->value());
+      newMap.Corpse_X = static_cast<float>(_corpse_x->value());
+      newMap.Corpse_Y = static_cast<float>(_corpse_y->value());
 
-  record.writeString(1, _directory->text().toStdString());
+      newMap.Name = LocaleString();
+      newMap.AllianceMapDescription = LocaleString();
+      newMap.HordeMapDescription = LocaleString();
 
-  record.write(2, _instance_type->itemData(_instance_type->currentIndex()).toInt());
-  _map_name->toRecord(record, 5);
+      _map_name->toRecord(newMap.Name);
+      _map_desc_alliance->toRecord(newMap.AllianceMapDescription);
+      _map_desc_horde->toRecord(newMap.HordeMapDescription);
 
-  record.write(22, _area_table_id->value());
-  _map_desc_alliance->toRecord(record, 23);
-  _map_desc_horde->toRecord(record, 40);
-  record.write(57, _loading_screen->value());
-  record.write(58, static_cast<float>(_minimap_icon_scale->value()));
-  record.write(59, _corpse_map_id->itemData(_corpse_map_id->currentIndex()).toInt());
-  record.write(60, static_cast<float>(_corpse_x->value()));
-  record.write(61, static_cast<float>(_corpse_y->value()));
-  record.write(62, _time_of_day_override->value());
-  record.write(63, _expansion_id->itemData(_expansion_id->currentIndex()).toInt());
-  record.write(64, _raid_offset->value());
-  record.write(65, _max_players->value());
+      _project->ClientDatabase->MapRepository->CreateMap(newMap);
+  }
+  else
+  {
+      auto currentMap = _project->ClientDatabase->MapRepository->GetMapById(_cur_map_id);
 
-  gMapDB.save();
+      currentMap.Directory = _directory->text().toStdString();
+      currentMap.InstanceType = _instance_type->itemData(_instance_type->currentIndex()).toInt();
+      currentMap.AreaTableId = _area_table_id->value();
+      currentMap.LoadingScreenId = _loading_screen->value();
+      currentMap.CorpseMapId = _corpse_map_id->itemData(_corpse_map_id->currentIndex()).toInt();
+      currentMap.TimeDayOverride = _time_of_day_override->value();
+      currentMap.ExpansionId = _expansion_id->itemData(_expansion_id->currentIndex()).toInt();
+      currentMap.RaidOffset = _raid_offset->value();
+      currentMap.MaxPlayers = _max_players->value();
+      currentMap.MiniMapScale = static_cast<float>(_minimap_icon_scale->value());
+      currentMap.Corpse_X = static_cast<float>(_corpse_x->value());
+      currentMap.Corpse_Y = static_cast<float>(_corpse_y->value());
+
+      _map_name->toRecord(currentMap.Name);
+      _map_desc_alliance->toRecord(currentMap.AllianceMapDescription);
+      _map_desc_horde->toRecord(currentMap.HordeMapDescription);
+
+      _project->ClientDatabase->MapRepository->SaveMap(currentMap);
+  }
 
   emit map_dbc_updated();
 
@@ -480,14 +507,34 @@ MapCreationWizard::~MapCreationWizard()
 void MapCreationWizard::addNewMap()
 {
   _is_new_record = true;
-  _cur_map_id = gMapDB.getEmptyRecordID();
+
+  auto newMap = Noggit::Database::Repositories::MapEntry();
+  newMap.Directory = "New_Map";
+  newMap.InstanceType = 1;
+  newMap.AreaTableId = 0;
+  newMap.LoadingScreenId = 0;
+  newMap.CorpseMapId = 0;
+  newMap.TimeDayOverride = 0;
+  newMap.ExpansionId = 0;
+  newMap.RaidOffset = 0;
+  newMap.MaxPlayers = 0;
+  newMap.MiniMapScale = 1.0f;
+  newMap.Corpse_X = 0.0f;
+  newMap.Corpse_Y = 0.0f;
+
+  newMap.Name = LocaleString();
+  newMap.AllianceMapDescription = LocaleString();
+  newMap.HordeMapDescription = LocaleString();
+
+  auto createdMap =_project->ClientDatabase->MapRepository->CreateMap(newMap);
+  _cur_map_id = createdMap.Id;
 
   if (_world)
   {
     delete _world;
   }
 
-  _world = new World("New_Map", _cur_map_id, Noggit::NoggitRenderContext::MAP_VIEW, true);
+  _world = new World(_project,"New_Map", _cur_map_id, Noggit::NoggitRenderContext::MAP_VIEW, true);
   _minimap_widget->world(_world);
 
   _directory->setText("New_Map");
@@ -524,8 +571,7 @@ void MapCreationWizard::removeMap()
 {
   if (!_is_new_record && _cur_map_id >= 0)
   {
-    gMapDB.removeRecord(_cur_map_id);
-    gMapDB.save();
+      _project->ClientDatabase->MapRepository->DeleteMap(_cur_map_id);
   }
 
   emit map_dbc_updated();
@@ -646,14 +692,14 @@ void LocaleDBCEntry::fill(Noggit::LocaleString& record)
    _flags->setValue(record.flags);
 }
 
-void LocaleDBCEntry::toRecord(DBCFile::Record &record, size_t field)
+void LocaleDBCEntry::toRecord(Noggit::LocaleString& record)
 {
   for (int loc = 0; loc < 16; ++loc)
   {
-    record.writeLocalizedString(field,getValue(loc), loc);
+      auto locale = LocaleNames[loc];
+      record.SetString(locale,getValue(loc));
   }
-
-  record.write(field + 16, _flags->value());
+  record.flags = _flags->value();
 }
 
 void LocaleDBCEntry::clear()

@@ -18,7 +18,7 @@ namespace Noggit
     class ModelViewer : public Ui::Tools::AssetBrowser::ModelViewer
     {
     public:
-        explicit ModelViewer(QWidget* parent = nullptr);
+        explicit ModelViewer(std::shared_ptr<Noggit::Project::NoggitProject> project, QWidget* parent = nullptr);
 
         void loadWorldUnderlay(std::string const& internal_name, int map_id);
         World* getWorld() { return _world.get(); };
@@ -45,8 +45,7 @@ namespace Noggit
         ImGuizmo::MODE _gizmo_mode = ImGuizmo::MODE::WORLD;
         ImGuizmo::OPERATION _gizmo_operation = ImGuizmo::OPERATION::TRANSLATE;
         Noggit::BoolToggleProperty _gizmo_on = {true};
-
-
+        std::shared_ptr<Noggit::Project::NoggitProject> _project;
     };
 
 

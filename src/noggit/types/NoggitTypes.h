@@ -82,6 +82,16 @@ namespace Noggit
       std::map<std::string, std::string> values;
       uint32_t flags;
 
+      LocaleString()
+      {
+          values = std::map<std::string, std::string>();
+      }
+
+      void SetString(std::string locale, std::string value)
+      {
+          values[locale] = value;
+      } 
+
       const std::string& operator[] (const std::string& locale)
       {
           return values[locale];

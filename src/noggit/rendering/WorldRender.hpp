@@ -16,7 +16,7 @@
 
 #include <opengl/shader.hpp>
 #include <noggit/rendering/Primitives.hpp>
-
+#include <noggit/project/ApplicationProject.h>
 #include <memory>
 
 class World;
@@ -27,7 +27,7 @@ namespace Noggit::Rendering
   class WorldRender : public BaseRender
   {
   public:
-    WorldRender(World* world);
+    WorldRender(std::shared_ptr<Noggit::Project::NoggitProject> project, World* world);
 
     void upload() override;
     void unload() override;
@@ -102,6 +102,9 @@ namespace Noggit::Rendering
     World* _world;
     float _cull_distance;
     float _view_distance;
+
+    // project
+    std::shared_ptr<Noggit::Project::NoggitProject> _project;
 
     // shaders
     std::unique_ptr<OpenGL::program> _mcnk_program;;
