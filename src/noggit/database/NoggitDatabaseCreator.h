@@ -28,6 +28,8 @@
 #include <SQLiteCpp/SQLiteCpp.h>
 #include <noggit/types/NoggitTypes.h>
 
+#include <noggit/database/repositories/map/_seed.h>    
+
 namespace Noggit::Database
 {
     enum class TableColumnFlags : int
@@ -54,6 +56,17 @@ namespace Noggit::Database
         std::string ColumnType;
         TableColumnFlags ColumnFlags;
         int ColumnArrayLength;
+    };
+
+    struct ApplicationProjectRepositories
+    {
+        std::shared_ptr<Repositories::WotlkMapRepository> MapRepository;
+
+
+        ApplicationProjectRepositories(std::filesystem::path const& database_path)
+        {
+            MapRepository = std::make_shared<Repositories::WotlkMapRepository>(database_path);
+        }
     };
 
     class ApplicationProjectDatabase

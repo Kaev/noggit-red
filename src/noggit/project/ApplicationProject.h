@@ -111,7 +111,7 @@ namespace Noggit::Project
     ProjectVersion projectVersion;
     std::vector<NoggitProjectPinnedMap> PinnedMaps;
     std::vector<NoggitProjectBookmarkMap> Bookmarks;
-    std::shared_ptr<BlizzardDatabaseLib::BlizzardDatabase> ClientDatabase;
+    std::shared_ptr<Database::ApplicationProjectRepositories> ClientDatabase;
     std::shared_ptr<BlizzardArchive::ClientData> ClientData;
 
     NoggitProject()
@@ -245,7 +245,7 @@ namespace Noggit::Project
     
       std::string dbd_file_directory = _configuration->ApplicationDatabaseDefinitionsPath;
 
-      project->ClientDatabase = std::make_shared<BlizzardDatabaseLib::BlizzardDatabase>(dbd_file_directory, client_build);
+      project->ClientDatabase = std::make_shared<Database::ApplicationProjectRepositories>(databasePath);
 
       try
       {

@@ -16,26 +16,26 @@ namespace Noggit::Database::Repositories
 
 	};
 
-	struct LocaleString
-	{
-		int id;
-		std::map<std::string, std::string> values;
-		uint32_t flags;
-
-		const std::string& operator[] (const char* locale)
-		{
-			return values[std::string(locale)];
-		}
-	};
-
 	struct MapEntry
 	{
-		LocaleString map_name;
-		std::string file_path;
-		int map_id;
-		int map_type_id;
-		int expansion_id;
-		bool pinned;
+		int Id;
+		std::string Directory;
+		LocaleString Name;		
+		int InstanceType;
+		int ExpansionId;
+		int Flags;
+		int PVP;
+		int AreaTableId;
+		LocaleString HordeMapDescription;
+		LocaleString AllianceMapDescription;
+		int LoadingScreenId;
+		double MiniMapScale;
+		int CorpseMapId;
+		double Corpse_X;
+		double Corpse_Y;
+		int TimeDayOverride;
+		int RaidOffset;
+		int MaxPlayers;
 	};
 
 	class WotlkMapRepository : IMapRepository
@@ -84,40 +84,70 @@ namespace Noggit::Database::Repositories
 			while(query.executeStep())
 			{
 				auto mapEntry = MapEntry();
-				mapEntry.map_id = query.getColumn(0).getInt();
-				mapEntry.file_path = query.getColumn(2).getString();
-				mapEntry.expansion_id = query.getColumn(3).getInt();
-				mapEntry.map_type_id = query.getColumn(4).getInt();
+				mapEntry.Id = query.getColumn(0).getInt();
+				mapEntry.Directory = query.getColumn(2).getString();
+				mapEntry.ExpansionId = query.getColumn(3).getInt();
+				mapEntry.InstanceType = query.getColumn(4).getInt();
 
 				auto localeStringId = query.getColumn(1).getInt();
-				mapEntry.map_name = GetLocaleString(localeStringId);
+				mapEntry.Name = GetLocaleString(localeStringId);
 
 				mapList.push_back(mapEntry);
 			}
 			return mapList;
 		}
 
-		std::string GetMapNameById(int mapId)
+		std::string GetMapDirectory(int mapId)
 		{
 			SQLite::Database   db(_databasePath.generic_string());
-			SQLite::Statement  query(db, "SELECT MapName_lang_0 FROM map WHERE ID = ?; ");
+			SQLite::Statement  query(db, "SELECT Directory FROM map WHERE ID = ?; ");
 
 			query.bind(1, mapId);
 
 			if (query.executeStep())
+			{
 				return query.getColumn(0).getString();
+			}
+			
 		}
 
-		int GetMapIdByName(const std::string& mapName)
-		{		
+		MapEntry GetMapById(int id)
+		{
 			SQLite::Database   db(_databasePath.generic_string());
-			SQLite::Statement  query(db, "SELECT ID FROM map WHERE MapName_lang = '?'");
+			SQLite::Statement  query(db, "SELECT Directory, InstanceType, Flags, PVP, MapName_lang,AreaTableID, MapDescription0_lang,"
+										 "MapDescription1_lang, LoadingScreenID,MinimapIconScale, CorpseMapID, Corpse_0, Corpse_1,"
+										 "TimeOfDayOverride,ExpansionID, RaidOffset, MaxPlayers FROM Map WHERE ID = ? ");
 
-			query.bind(1, mapName);
+			query.bind(1, id);
 
 			if (query.executeStep())
-				return query.getColumn(0).getInt();
-		}
+			{
+				auto mapEntry = MapEntry();
+				mapEntry.Id = id;
+				mapEntry.Directory = query.getColumn(0).getString();
+				mapEntry.InstanceType = query.getColumn(1).getInt();
+				mapEntry.Flags = query.getColumn(2).getInt();
+				mapEntry.PVP = query.getColumn(3).getInt();
+				auto mapLangLocaleStringId = query.getColumn(4).getInt();
+				mapEntry.Name = GetLocaleString(mapLangLocaleStringId);
+				mapEntry.AreaTableId = query.getColumn(5).getInt();
+				auto mapHordeDescLocaleStringId = query.getColumn(6).getInt();
+				mapEntry.Name = GetLocaleString(mapHordeDescLocaleStringId);
+				auto mapAllianceDescLocaleStringId = query.getColumn(7).getInt();
+				mapEntry.Name = GetLocaleString(mapAllianceDescLocaleStringId);
+				mapEntry.LoadingScreenId = query.getColumn(8).getInt();
+				mapEntry.MiniMapScale = query.getColumn(9).getDouble();
+				mapEntry.CorpseMapId = query.getColumn(10).getInt();
+				mapEntry.Corpse_X = query.getColumn(11).getDouble();
+				mapEntry.Corpse_Y = query.getColumn(12).getDouble();
+				mapEntry.TimeDayOverride = query.getColumn(13).getInt();
+				mapEntry.ExpansionId = query.getColumn(14).getInt();
+				mapEntry.RaidOffset = query.getColumn(15).getInt();
+				mapEntry.MaxPlayers = query.getColumn(16).getInt();
+
+				return mapEntry;
+			}
+		} 
 	};
 
 	class ShadowlandsMapRepository : IMapRepository

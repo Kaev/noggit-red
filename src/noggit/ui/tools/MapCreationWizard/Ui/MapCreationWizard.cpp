@@ -71,30 +71,22 @@ MapCreationWizard::MapCreationWizard(std::shared_ptr<Project::NoggitProject> pro
   _corpse_map_id->setItemData(0, QVariant (-1));
 
   // Fill selector combo
-
-  const auto& table = std::string("Map");
-  auto mapTable = _project->ClientDatabase->LoadTable(table, readFileAsIMemStream);
-
-  int count = 0;
-  auto iterator = mapTable.Records();
-  while (iterator.HasRecords())
+  auto maps = project->ClientDatabase->MapRepository->GetMapList();
+  auto count = 1;
+  for (auto& map : maps)
   {
-      auto record = iterator.Next();
+      std::string name = map.Name[Locale::enUS];
+      int map_id = map.Id;
+      int area_type = map.InstanceType;
 
-      int map_id =  record.RecordId;
-      std::string name = record.Columns["MapName_lang"].Value;
-      int area_type = std::stoi(record.Columns["InstanceType"].Value);
-
-      //if (area_type < 0 || area_type > 4 || !World::IsEditableWorld(record))
-      //    continue;
+      if (area_type < 0 || area_type > 4 || !World::IsEditableWorld(map.Directory,map.Id))
+          continue;
 
       _corpse_map_id->addItem(QString::number(map_id) + " - " + QString::fromUtf8(name.c_str()));
       _corpse_map_id->setItemData(count + 1, QVariant(map_id));
 
       count++;
   }
-
-  _project->ClientDatabase->UnloadTable("Map");
 
   auto add_btn = new QPushButton("New",this);
   add_btn->setIcon(Noggit::Ui::FontAwesomeIcon(Noggit::Ui::FontAwesome::plus));
@@ -320,10 +312,6 @@ MapCreationWizard::MapCreationWizard(std::shared_ptr<Project::NoggitProject> pro
 void MapCreationWizard::selectMap(int map_id)
 {
   _is_new_record = false;
-
-  auto table = _project->ClientDatabase->LoadTable("Map", readFileAsIMemStream);
-  auto record = table.Record(map_id);
-
   _cur_map_id = map_id;
 
   if (_world)
@@ -331,41 +319,24 @@ void MapCreationWizard::selectMap(int map_id)
     delete _world;
   }
 
-  auto directoryName = record.Columns["Directory"].Value;
-  auto instanceType = record.Columns["InstanceType"].Value;
+  auto mapEntry = _project->ClientDatabase->MapRepository->GetMapById(map_id);
 
-  auto areaTableId = record.Columns["AreaTableID"].Value;
-  auto loadingScreenId = record.Columns["LoadingScreenID"].Value;
-  auto minimapIconScale = record.Columns["MinimapIconScale"].Value;
-  auto corpseMapId = record.Columns["CorpseMapID"].Value;
-  auto corpseCoords = record.Columns["Corpse"].Values;
-  auto expansionId = record.Columns["ExpansionID"].Value;
-  auto maxPlayers = record.Columns["MaxPlayers"].Value;
-  auto timeOffset = record.Columns["TimeOffset"].Value;
-
-  _world = new World(directoryName, map_id, Noggit::NoggitRenderContext::MAP_VIEW);
+  _world = new World(mapEntry.Directory, map_id, Noggit::NoggitRenderContext::MAP_VIEW);
   _minimap_widget->world(_world);
-
-  _directory->setText(QString::fromStdString(directoryName));
+  _directory->setText(QString::fromStdString(mapEntry.Directory));
   _directory->setEnabled(false);
-
   _is_big_alpha->setChecked(_world->mapIndex.hasBigAlpha());
   _is_big_alpha->setEnabled(false);
-
   _sort_by_size_cat->setChecked(_world->mapIndex.sort_models_by_size_class());
+  _instance_type->setCurrentIndex(mapEntry.InstanceType);
+  _map_name->fill(mapEntry.Name);
+  _map_desc_alliance->fill(mapEntry.AllianceMapDescription);
+  _map_desc_horde->fill(mapEntry.HordeMapDescription);
+  _area_table_id->setValue(mapEntry.AreaTableId);
+  _loading_screen->setValue(mapEntry.LoadingScreenId);
+  _minimap_icon_scale->setValue(mapEntry.MiniMapScale);
 
-  _instance_type->setCurrentIndex(std::atoi(instanceType.c_str()));
-
-  _map_name->fill(record, "MapName_lang");
-  _map_desc_alliance->fill(record, "MapDescription1_lang");
-  _map_desc_horde->fill(record, "MapDescription0_lang");
-
-  _area_table_id->setValue(std::atoi(areaTableId.c_str()));
-
-  _loading_screen->setValue(std::atoi(loadingScreenId.c_str()));
-  _minimap_icon_scale->setValue(std::atof(minimapIconScale.c_str()));
-
-  int corpse_map_idx = std::atoi(corpseMapId.c_str());
+  int corpse_map_idx = mapEntry.CorpseMapId;
   for (int i = 0; i < _corpse_map_id->count(); ++i)
   {
     if (_corpse_map_id->itemData(i) == corpse_map_idx)
@@ -374,20 +345,14 @@ void MapCreationWizard::selectMap(int map_id)
     }
   }
 
-  if(corpseCoords.size() > 0)
-  {
-      _corpse_x->setValue(std::atoi(corpseCoords[0].c_str()));
-      _corpse_y->setValue(std::atoi(corpseCoords[1].c_str()));
-  }
-
-  _time_of_day_override->setValue(std::atoi(timeOffset.c_str()));
-  _expansion_id->setCurrentIndex(std::atoi(expansionId.c_str()));
+  _corpse_x->setValue(mapEntry.Corpse_X);
+  _corpse_y->setValue(mapEntry.Corpse_Y);
+  _time_of_day_override->setValue(mapEntry.TimeDayOverride);
+  _expansion_id->setCurrentIndex(mapEntry.ExpansionId);
 
   //_raid_offset->setValue(record.getInt(64)); only ever used in 2 places? not sure what for
 
-  _max_players->setValue(std::atoi(maxPlayers.c_str()));
-
-  _project->ClientDatabase->UnloadTable("Map");
+  _max_players->setValue(mapEntry.MaxPlayers);
 }
 
 void MapCreationWizard::wheelEvent(QWheelEvent* event)
@@ -670,25 +635,15 @@ void LocaleDBCEntry::fill(DBCFile::Record& record, size_t field)
   _flags->setValue(record.getInt(field + 16));
 }
 
-void LocaleDBCEntry::fill(BlizzardDatabaseLib::Structures::BlizzardDatabaseRow& record, std::string columnName)
+void LocaleDBCEntry::fill(Noggit::LocaleString& record)
 {
-    auto columnValues = record.Columns[columnName].Values;
-    auto columnFlagsValue = record.Columns[columnName + "_flags"].Value;
+   for (int loc = 0; loc < 16; ++loc)
+   {
+       auto locale = LocaleNames[loc];
+       setValue(record[locale], loc);
+   }
 
-    if(columnValues.size() == 0)
-    {
-        auto singleValue = record.Columns[columnName].Value;
-        setValue(singleValue, 0);
-    }
-    else
-    {
-        for (int loc = 0; loc < 16; ++loc)
-        {
-            setValue(columnValues[loc], loc);
-        }
-    }
-
-    _flags->setValue(std::atoi(columnFlagsValue.c_str()));
+   _flags->setValue(record.flags);
 }
 
 void LocaleDBCEntry::toRecord(DBCFile::Record &record, size_t field)

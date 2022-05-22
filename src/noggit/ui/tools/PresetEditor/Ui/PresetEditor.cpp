@@ -74,32 +74,23 @@ PresetEditorWidget::PresetEditorWidget(std::shared_ptr<Project::NoggitProject> p
   ui->worldSelector->addItem("None");
   ui->worldSelector->setItemData(0, QVariant(-1));
 
-  const auto& table = std::string("Map");
-  auto mapTable = _project->ClientDatabase->LoadTable(table, readFileAsIMemStream);
-
-  int count = 1;
-  auto iterator = mapTable.Records();
-  while (iterator.HasRecords())
+  // Fill selector combo
+  auto maps = project->ClientDatabase->MapRepository->GetMapList();
+  auto count = 1;
+  for (auto& map : maps)
   {
-      auto record = iterator.Next();
+      std::string name = map.Name[Locale::enUS];
+      int map_id = map.Id;
+      int area_type = map.InstanceType;
 
-      int map_id = record.RecordId;
-      std::string name = record.Columns["MapName_lang"].Value;
-      int area_type = std::stoi(record.Columns["InstanceType"].Value);
-
-      //if (area_type < 0 || area_type > 4 || !World::IsEditableWorld(record))
-      //    continue;
+      if (area_type < 0 || area_type > 4 || !World::IsEditableWorld(map.Directory, map.Id))
+          continue;
 
       ui->worldSelector->addItem(QString::number(map_id) + " - " + QString::fromUtf8(name.c_str()));
-      ui->worldSelector->setItemData(count, QVariant(map_id), Qt::UserRole);
-
-      auto map_internal_name = record.Columns["Directory"].Value;
-      ui->worldSelector->setItemData(count, QVariant(QString::fromStdString(map_internal_name)), Qt::UserRole + 1);
-
+      ui->worldSelector->setItemData(count + 1, QVariant(map_id));
+      ui->worldSelector->setItemData(count, QVariant(QString::fromStdString(map.Directory)), Qt::UserRole + 1);
       count++;
   }
-  _project->ClientDatabase->UnloadTable("map");
-
 
   // Handle minimap widget
   ui->minimapWidget->draw_boundaries(true);

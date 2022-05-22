@@ -16,20 +16,19 @@ void BuildMapListComponent::buildMapList(Noggit::Ui::Windows::NoggitWindow* pare
 {
   parent->_continents_table->clear();
 
-  auto mapRepository = Noggit::Database::Repositories::WotlkMapRepository(parent->_project->databasePath);
   auto pinned_maps = std::vector<Widget::MapListData>();
   auto mapList = std::vector<Widget::MapListData>();
 
-  auto maps = mapRepository.GetMapList();
+  auto maps = parent->_project->ClientDatabase->MapRepository->GetMapList();
   for (auto & map : maps)
   {
       Widget::MapListData map_list_data{};
-      map_list_data.map_name = QString::fromUtf8(map.map_name[Locale::enUS].c_str());
-      map_list_data.map_id = map.map_id;
-      map_list_data.map_type_id = map.map_type_id;
-      map_list_data.expansion_id = map.expansion_id;
+      map_list_data.map_name = QString::fromUtf8(map.Name[Locale::enUS].c_str());
+      map_list_data.map_id = map.Id;
+      map_list_data.map_type_id = map.InstanceType;
+      map_list_data.expansion_id = map.ExpansionId;
 
-      if (!World::IsEditableWorld(map.file_path, map.map_id))
+      if (!World::IsEditableWorld(map.Directory, map.Id))
           continue;
 
         auto project_pinned_maps = parent->_project->PinnedMaps;

@@ -75,4 +75,22 @@ namespace Noggit
           Locale::Unk3,
           Locale::Unk4
   };
+
+  struct LocaleString
+  {
+      int id;
+      std::map<std::string, std::string> values;
+      uint32_t flags;
+
+      const std::string& operator[] (const std::string& locale)
+      {
+          return values[locale];
+      }
+
+      const std::string& operator[] (const char* locale)
+      {
+          return values[std::string(locale)];
+      }
+  };
+
 }

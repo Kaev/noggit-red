@@ -185,13 +185,10 @@ namespace Noggit::Ui::Windows
 
     _world.reset();
 
-    auto table = _project->ClientDatabase->LoadTable("Map", readFileAsIMemStream);
-    auto record = table.Record(map_id);
+    auto directory = _project->ClientDatabase->MapRepository->GetMapDirectory(map_id);
+    _world = std::make_unique<World>(directory, map_id, Noggit::NoggitRenderContext::MAP_VIEW);
 
-    _world = std::make_unique<World>(record.Columns["Directory"].Value, map_id, Noggit::NoggitRenderContext::MAP_VIEW);
     _minimap->world(_world.get());
-
-    _project->ClientDatabase->UnloadTable("Map");
 
     emit mapSelected(map_id);
 
