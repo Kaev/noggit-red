@@ -30,7 +30,10 @@ namespace Noggit::Database::Repositories
 
 	class IAreaTableRepository
 	{
-
+	public:
+		virtual std::vector<AreaTableEntry> GetAllAreasForMapId(unsigned int areaId) = 0;
+		virtual uint32_t GetParentAreaId(unsigned int areaId) = 0;
+		virtual LocaleString GetAreaName(unsigned int areaId) = 0;
 	};
 
 	class WotlkAreaTableRepository : public IAreaTableRepository, public LocaleStringRepository
@@ -41,7 +44,7 @@ namespace Noggit::Database::Repositories
 		{
 		}
 
-		std::vector<AreaTableEntry> GetAllAreasForMapId(unsigned int areaId)
+		std::vector<AreaTableEntry> GetAllAreasForMapId(unsigned int areaId) override
 		{
 
 			SQLite::Database   db(_databasePath.generic_string());
@@ -84,7 +87,7 @@ namespace Noggit::Database::Repositories
 			return areas;
 		}
 
-		uint32_t GetParentAreaId(unsigned int areaId)
+		uint32_t GetParentAreaId(unsigned int areaId) override
 		{
 			if (!areaId || areaId == -1)
 				return 0;
@@ -100,7 +103,7 @@ namespace Noggit::Database::Repositories
 			}
 		}
 
-		LocaleString GetAreaName(unsigned int areaId)
+		LocaleString GetAreaName(unsigned int areaId) override
 		{
 			SQLite::Database   db(_databasePath.generic_string());
 			SQLite::Statement  query(db, "SELECT AreaName_lang FROM AreaTable WHERE ID = ?; ");
