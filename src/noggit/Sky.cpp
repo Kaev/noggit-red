@@ -13,6 +13,8 @@
 #include <string>
 #include <array>
 
+#include "project/CurrentProject.hpp"
+
 const float skymul = 36.0f;
 
 SkyColor::SkyColor(int t, int col)
@@ -153,7 +155,9 @@ Sky::Sky(DBCFile::Iterator data, Noggit::NoggitRenderContext context)
 
     if (skybox_id)
     {
-      skybox.emplace(gLightSkyboxDB.getByID(skybox_id).getString(LightSkyboxDB::filename), _context);
+        auto project = Noggit::Project::CurrentProject::get();
+        auto skyboxFilename = project->ClientDatabase->LightSkyBoxRepository->GetSkyboxFilenameById(skybox_id);
+       skybox.emplace(skyboxFilename, _context);
     }
   }
   catch (...)

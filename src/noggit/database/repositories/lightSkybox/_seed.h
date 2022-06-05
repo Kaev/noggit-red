@@ -18,6 +18,19 @@ namespace Noggit::Database::Repositories
 		{
 
 		}
+
+		std::string GetSkyboxFilenameById(int id)
+		{
+			SQLite::Database   db(_databasePath.generic_string());
+			SQLite::Statement  query(db, "SELECT Name FROM LightSkybox WHERE ID = ?; ");
+
+			query.bind(1, id);
+
+			if (query.executeStep())
+			{
+				return query.getColumn(0).getString();
+			}
+		}
 	};
 
 	class ShadowlandsLightSkyBoxRepository : public ILightSkyBoxRepository

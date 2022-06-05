@@ -42,19 +42,6 @@ public:
   static const size_t flags = 9;
 };
 
-class LightSkyboxDB : public DBCFile
-{
-public:
-  LightSkyboxDB() :
-    DBCFile("DBFilesClient\\LightSkybox.dbc")
-  { }
-
-  /// Fields
-  static const size_t ID = 0;        // uint
-  static const size_t filename = 1;    // string
-  static const size_t flags = 2;      // uint
-};
-
 class LightIntBandDB : public DBCFile
 {
 public:
@@ -87,6 +74,5 @@ void OpenDBs(std::shared_ptr<BlizzardArchive::ClientData> clientData);
 
 extern LightDB gLightDB;
 extern LightParamsDB gLightParamsDB;
-extern LightSkyboxDB gLightSkyboxDB;
 extern LightIntBandDB gLightIntBandDB;
 extern LightFloatBandDB gLightFloatBandDB;
