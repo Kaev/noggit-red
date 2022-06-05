@@ -42,23 +42,9 @@ public:
   static const size_t flags = 9;
 };
 
-class LightIntBandDB : public DBCFile
-{
-public:
-  LightIntBandDB() :
-    DBCFile("DBFilesClient\\LightIntBand.dbc")
-  { }
-
-  /// Fields
-  static const size_t ID = 0;        // uint
-  static const size_t Entries = 1;    // uint
-  static const size_t Times = 2;      // uint
-  static const size_t Values = 18;    // uint
-};
 
 
 void OpenDBs(std::shared_ptr<BlizzardArchive::ClientData> clientData);
 
 extern LightDB gLightDB;
 extern LightParamsDB gLightParamsDB;
-extern LightIntBandDB gLightIntBandDB;

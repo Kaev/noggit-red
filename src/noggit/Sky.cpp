@@ -54,23 +54,24 @@ Sky::Sky(DBCFile::Iterator data, Noggit::NoggitRenderContext context)
   int light_param_0 = data->getInt(LightDB::DataIDs);
   int light_int_start = light_param_0 * NUM_SkyColorNames - 17;
 
+  auto project = Noggit::Project::CurrentProject::get();
+
   for (int i = 0; i < NUM_SkyColorNames; ++i)
   {
     try
     {
-      DBCFile::Record rec = gLightIntBandDB.getByID(light_int_start + i);
-      int entries = rec.getInt(LightIntBandDB::Entries);
+        auto lightIntBand = project->ClientDatabase->LightIntBandRepository->GetLightIntBandEntryById(light_int_start + i);
 
-      if (entries == 0)
+      if (lightIntBand.Count == 0)
       {
         mmin[i] = -1;
       }
       else
       {
-        mmin[i] = rec.getInt(LightIntBandDB::Times);
-        for (int l = 0; l < entries; l++)
+        mmin[i] = lightIntBand.Timings[0];
+        for (int l = 0; l < lightIntBand.Count; l++)
         {
-          SkyColor sc(rec.getInt(LightIntBandDB::Times + l), rec.getInt(LightIntBandDB::Values + l));
+          SkyColor sc(lightIntBand.Timings[l], lightIntBand.Data[l]);
           colorRows[i].push_back(sc);
         }
       }
@@ -78,21 +79,20 @@ Sky::Sky(DBCFile::Iterator data, Noggit::NoggitRenderContext context)
     catch (...)
     {
       LogError << "When trying to intialize sky " << data->getInt(LightDB::ID) << ", there was an error with getting an entry in a DBC (" << i << "). Sorry." << std::endl;
-      DBCFile::Record rec = gLightIntBandDB.getByID(i);
-      int entries = rec.getInt(LightIntBandDB::Entries);
+      auto lightIntBand = project->ClientDatabase->LightIntBandRepository->GetLightIntBandEntryById(i);
 
-      if (entries == 0)
+      if (lightIntBand.Count == 0)
       {
-        mmin[i] = -1;
+          mmin[i] = -1;
       }
       else
       {
-        mmin[i] = rec.getInt(LightIntBandDB::Times);
-        for (int l = 0; l < entries; l++)
-        {
-          SkyColor sc(rec.getInt(LightIntBandDB::Times + l), rec.getInt(LightIntBandDB::Values + l));
-          colorRows[i].push_back(sc);
-        }
+          mmin[i] = lightIntBand.Timings[0];
+          for (int l = 0; l < lightIntBand.Count; l++)
+          {
+              SkyColor sc(lightIntBand.Timings[l], lightIntBand.Data[l]);
+              colorRows[i].push_back(sc);
+          }
       }
     }
   }
@@ -101,7 +101,7 @@ Sky::Sky(DBCFile::Iterator data, Noggit::NoggitRenderContext context)
 
   for (int i = 0; i < NUM_SkyFloatParamsNames; ++i)
   {
-      auto project = Noggit::Project::CurrentProject::get();
+  
 
     try
     {
@@ -114,7 +114,7 @@ Sky::Sky(DBCFile::Iterator data, Noggit::NoggitRenderContext context)
       else
       {
         mmin_float[i] = lightFloatBand.Timings[0];
-        for (int l = 1; l < lightFloatBand.Count; l++)
+        for (int l = 0; l < lightFloatBand.Count; l++)
         {
           SkyFloatParam sc(lightFloatBand.Timings[l], lightFloatBand.Data[l]);
           floatParams[i].push_back(sc);
@@ -133,7 +133,7 @@ Sky::Sky(DBCFile::Iterator data, Noggit::NoggitRenderContext context)
       else
       {
           mmin_float[i] = lightFloatBand.Timings[0];
-          for (int l = 1; l < lightFloatBand.Count; l++)
+          for (int l = 0; l < lightFloatBand.Count; l++)
           {
               SkyFloatParam sc(lightFloatBand.Timings[l], lightFloatBand.Data[l]);
               floatParams[i].push_back(sc);

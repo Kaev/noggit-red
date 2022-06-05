@@ -8,11 +8,10 @@
 
 LightDB gLightDB;
 LightParamsDB gLightParamsDB;
-LightIntBandDB gLightIntBandDB;
+
 
 void OpenDBs(std::shared_ptr<BlizzardArchive::ClientData> clientData)
 {
   gLightDB.open(clientData);
   gLightParamsDB.open(clientData);
-  gLightIntBandDB.open(clientData);
 }

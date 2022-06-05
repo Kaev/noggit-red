@@ -32,6 +32,7 @@ namespace Noggit
               std::string("LightParams"),
               std::string("LightSkybox"),
               std::string("LightFloatBand"),
+			  std::string("LightIntBand"),
               std::string("GroundEffectDoodad"),
               std::string("GroundEffectTexture"),
               std::string("LiquidType")
