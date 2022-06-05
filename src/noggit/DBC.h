@@ -117,18 +117,6 @@ public:
   static const size_t TerrainType = 10;  // uint
 };
 
-class GroundEffectDoodadDB : public DBCFile
-{
-public:
-  GroundEffectDoodadDB() :
-    DBCFile("DBFilesClient\\GroundEffectDoodad.dbc")
-  { }
-
-  /// Fields
-  static const size_t ID = 0;        // uint
-  static const size_t Filename = 1;    // string
-  static const size_t Flags = 2;   // uint
-};
 
 class LiquidTypeDB : public DBCFile
 {
@@ -154,14 +142,11 @@ public:
 
 void OpenDBs(std::shared_ptr<BlizzardArchive::ClientData> clientData);
 
-const char * getGroundEffectDoodad(unsigned int effectID, int DoodadNum);
-
 extern AreaDB gAreaDB;
 extern LightDB gLightDB;
 extern LightParamsDB gLightParamsDB;
 extern LightSkyboxDB gLightSkyboxDB;
 extern LightIntBandDB gLightIntBandDB;
 extern LightFloatBandDB gLightFloatBandDB;
-extern GroundEffectDoodadDB gGroundEffectDoodadDB;
 extern GroundEffectTextureDB gGroundEffectTextureDB;
 extern LiquidTypeDB gLiquidTypeDB;

@@ -6,6 +6,7 @@
 #include <noggit/ui/tools/NodeEditor/Nodes/BaseNode.inl>
 #include <noggit/ui/tools/NodeEditor/Nodes/DataTypes/GenericData.hpp>
 #include "ChunkAddDetailDoodads.hpp"
+#include <noggit/project/CurrentProject.hpp>
 
 using namespace Noggit::Ui::Tools::NodeEditor::Nodes;
 
@@ -319,15 +320,14 @@ void ChunkAddDetailDoodads::compute()
       for(std::size_t i{}; i < 2; ++i)
         inMinichunkCoords[i] -= coordsMinichunk[i];
 
+      auto currentProject = Noggit::Project::CurrentProject::get();
       float const curHeight{curPlane.a * inMinichunkCoords[1] + curPlane.b
       * inMinichunkCoords[0] + std::fabs(curPlane.d) / curPlane.c};
       /* [0] = random tilt, [1] = scale, [2] = y */
       std::array<float, 3> meta;
       std::for_each(meta.begin(), meta.end(), std::bind(DetailDoodadMgr::genCoord
       , std::ref(randomizer), std::placeholders::_1));
-      QString filename{("world/nodxt/detail/"
-      + std::string{gGroundEffectDoodadDB.getByID(curDoodadId)
-      .getString(GroundEffectDoodadDB::Filename)}).c_str()};
+      QString filename{("world/nodxt/detail/"+ currentProject->ClientDatabase->GroundEffectDoodadRepository->GetGroundEffectDoodad(curDoodadId)).c_str()};
       filename = filename.replace(".mdx", ".m2", Qt::CaseInsensitive);
 
       world->addM2(filename.toStdString(), {chunk->xbase - inMinichunkCoords[0]

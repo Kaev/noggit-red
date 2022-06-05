@@ -12,7 +12,6 @@ LightParamsDB gLightParamsDB;
 LightSkyboxDB gLightSkyboxDB;
 LightIntBandDB gLightIntBandDB;
 LightFloatBandDB gLightFloatBandDB;
-GroundEffectDoodadDB gGroundEffectDoodadDB;
 GroundEffectTextureDB gGroundEffectTextureDB;
 LiquidTypeDB gLiquidTypeDB;
 
@@ -24,7 +23,6 @@ void OpenDBs(std::shared_ptr<BlizzardArchive::ClientData> clientData)
   gLightSkyboxDB.open(clientData);
   gLightIntBandDB.open(clientData);
   gLightFloatBandDB.open(clientData);
-  gGroundEffectDoodadDB.open(clientData);
   gGroundEffectTextureDB.open(clientData);
   gLiquidTypeDB.open(clientData);
 }
@@ -85,19 +83,19 @@ std::uint32_t AreaDB::get_area_parent(int area_id)
   }
 }
 
-const char * getGroundEffectDoodad(unsigned int effectID, int DoodadNum)
-{
-  try
-  {
-    unsigned int doodadId = gGroundEffectTextureDB.getByID(effectID).getUInt(GroundEffectTextureDB::Doodads + DoodadNum);
-    return gGroundEffectDoodadDB.getByID(doodadId).getString(GroundEffectDoodadDB::Filename);
-  }
-  catch (DBCFile::NotFound)
-  {
-    LogError << "Tried to get a not existing row in GroundEffectTextureDB or GroundEffectDoodadDB ( effectID = " << effectID << ", DoodadNum = " << DoodadNum << " )!" << std::endl;
-    return 0;
-  }
-}
+//const char * getGroundEffectDoodad(unsigned int effectID, int DoodadNum)
+//{
+//  try
+//  {
+//    unsigned int doodadId = gGroundEffectTextureDB.getByID(effectID).getUInt(GroundEffectTextureDB::Doodads + DoodadNum);
+//    return gGroundEffectDoodadDB.getByID(doodadId).getString(GroundEffectDoodadDB::Filename);
+//  }
+//  catch (DBCFile::NotFound)
+//  {
+//    LogError << "Tried to get a not existing row in GroundEffectTextureDB or GroundEffectDoodadDB ( effectID = " << effectID << ", DoodadNum = " << DoodadNum << " )!" << std::endl;
+//    return 0;
+//  }
+//}
 
 int LiquidTypeDB::getLiquidType(int pID)
 {
