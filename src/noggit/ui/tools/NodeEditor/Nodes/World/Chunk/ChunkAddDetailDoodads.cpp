@@ -163,7 +163,9 @@ auto DetailDoodadMgr::genCoord(BlizzardRandomizer& randomizer, float& value) -> 
 
 void ChunkAddDetailDoodads::compute()
 {
-  assert(gGroundEffectTextureDB.getRecordCount());
+  //assert(gGroundEffectTextureDB.getRecordCount());
+  auto currentProject = Noggit::Project::CurrentProject::get();
+
   World* const world{gCurrentContext->getWorld()};
   gCurrentContext->getViewport()->makeCurrent();
   OpenGL::context::scoped_setter const _{::gl, gCurrentContext->getViewport()->context()};
@@ -262,8 +264,10 @@ void ChunkAddDetailDoodads::compute()
     unsigned const curRecId{chunk->texture_set->getEffectForLayer((chunk->texture_set
     ->getDoodadMappingBase()[curSplat[1]] & DetailDoodadMgr::bitSplatMask0x2[curSplat[0]])
     >> DetailDoodadMgr::bitSplatShft0x2[curSplat[0]])};
-    DBCFile::Record curRecord{gGroundEffectTextureDB.getByID(curRecId)};
-    unsigned curDbDensity{curRecord.getUInt(GroundEffectTextureDB::Amount)};
+
+    auto curRecord = currentProject->ClientDatabase->GroundEffectTextureRepository->GetDoodadEffectTextureById(curRecId);
+
+    unsigned curDbDensity = curRecord.Density;
 
     if(!curDbDensity)
       curDbDensity = 8;
@@ -274,8 +278,8 @@ void ChunkAddDetailDoodads::compute()
 
     for(std::size_t i{}; i < 4; ++i)
     {
-      unsigned const curDoodadId{curRecord.getUInt(GroundEffectTextureDB::Doodads + i)};
-      unsigned const curWeight{curRecord.getUInt(GroundEffectTextureDB::Weights + i)};
+      auto curDoodadId = curRecord.DoodadIds[i];
+      auto curWeight = curRecord.DoodadWeights[i];
       unsigned valCache{val};
 
       for(std::size_t j{}; j < curWeight; ++j)
@@ -290,8 +294,7 @@ void ChunkAddDetailDoodads::compute()
 
     for(std::size_t i{accumWeight}; i < 16; ++i)
     {
-      doodadIds[val & 15u] = curRecord.getUInt(GroundEffectTextureDB::Doodads
-      + accumWeight & 3u);
+      doodadIds[val & 15u] = curRecord.DoodadIds[accumWeight & 3u];
       val += 13;
     }
 
@@ -320,7 +323,7 @@ void ChunkAddDetailDoodads::compute()
       for(std::size_t i{}; i < 2; ++i)
         inMinichunkCoords[i] -= coordsMinichunk[i];
 
-      auto currentProject = Noggit::Project::CurrentProject::get();
+    
       float const curHeight{curPlane.a * inMinichunkCoords[1] + curPlane.b
       * inMinichunkCoords[0] + std::fabs(curPlane.d) / curPlane.c};
       /* [0] = random tilt, [1] = scale, [2] = y */

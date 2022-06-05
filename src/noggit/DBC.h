@@ -102,22 +102,6 @@ public:
   static const size_t Values = 18;    // float
 };
 
-class GroundEffectTextureDB : public DBCFile
-{
-public:
-  GroundEffectTextureDB() :
-    DBCFile("DBFilesClient\\GroundEffectTexture.dbc")
-  { }
-
-  /// Fields
-  static const size_t ID = 0;        // uint
-  static const size_t Doodads = 1;    // uint[4]
-  static const size_t Weights = 5;    // uint[4]
-  static const size_t Amount = 9;      // uint
-  static const size_t TerrainType = 10;  // uint
-};
-
-
 class LiquidTypeDB : public DBCFile
 {
 public:
@@ -148,5 +132,4 @@ extern LightParamsDB gLightParamsDB;
 extern LightSkyboxDB gLightSkyboxDB;
 extern LightIntBandDB gLightIntBandDB;
 extern LightFloatBandDB gLightFloatBandDB;
-extern GroundEffectTextureDB gGroundEffectTextureDB;
 extern LiquidTypeDB gLiquidTypeDB;
