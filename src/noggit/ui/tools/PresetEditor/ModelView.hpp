@@ -18,7 +18,7 @@ namespace Noggit
     class ModelViewer : public Ui::Tools::AssetBrowser::ModelViewer
     {
     public:
-        explicit ModelViewer(std::shared_ptr<Noggit::Project::NoggitProject> project, QWidget* parent = nullptr);
+        explicit ModelViewer(QWidget* parent = nullptr);
 
         void loadWorldUnderlay(std::string const& internal_name, int map_id);
         World* getWorld() { return _world.get(); };

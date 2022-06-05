@@ -3,6 +3,7 @@
 #include <noggit/DBC.h>
 
 #include <sstream>
+#include <noggit/project/CurrentProject.hpp>
 
 
 void selected_chunk_type::updateDetails(Noggit::Ui::detail_infos* detail_widget)
@@ -10,10 +11,12 @@ void selected_chunk_type::updateDetails(Noggit::Ui::detail_infos* detail_widget)
   std::stringstream select_info;
 
   mcnk_flags const& flags = chunk->header_flags;
+  auto project = Noggit::Project::CurrentProject::get();
+  auto areaName= project->ClientDatabase->AreaTableRepository->GetAreaName(chunk->getAreaID())[Noggit::Locale::enUS];
 
   select_info << "<b>Chunk</b> (" << chunk->px << ", " << chunk->py << ") flat index: (" << chunk->py * 16 + chunk->px
     << ") of <b>tile</b> (" << chunk->mt->index.x << " , " << chunk->mt->index.z << ")"
-    << "<br><b>area ID:</b> " << chunk->getAreaID() << " (\"" << gAreaDB.getAreaName(chunk->getAreaID()) << "\")"
+    << "<br><b>area ID:</b> " << chunk->getAreaID() << " (\"" << areaName << "\")"
     << "<br><b>flags</b>: "
     << (flags.flags.has_mcsh ? "<br>shadows " : "")
     << (flags.flags.impass ? "<br>impassable " : "")

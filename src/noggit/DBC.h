@@ -3,26 +3,7 @@
 #pragma once
 
 #include <noggit/DBCFile.h>
-
 #include <string>
-
-class AreaDB : public DBCFile
-{
-public:
-  AreaDB() :
-    DBCFile("DBFilesClient\\AreaTable.dbc")
-  { }
-
-  /// Fields
-  static const size_t AreaID = 0;    // uint
-  static const size_t Continent = 1;  // uint
-  static const size_t Region = 2;    // uint [AreaID]
-  static const size_t Flags = 4;    // bit field
-  static const size_t Name = 11;    // localisation string
-
-  static std::string getAreaName(int pAreaID);
-  static std::uint32_t get_area_parent(int area_id);
-};
 
 class LightDB : public DBCFile
 {
@@ -126,7 +107,6 @@ public:
 
 void OpenDBs(std::shared_ptr<BlizzardArchive::ClientData> clientData);
 
-extern AreaDB gAreaDB;
 extern LightDB gLightDB;
 extern LightParamsDB gLightParamsDB;
 extern LightSkyboxDB gLightSkyboxDB;

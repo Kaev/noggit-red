@@ -106,14 +106,11 @@ namespace Noggit
       _area_tree->setColumnCount(1);
       _items.clear();
 
-      //  Read out Area List.
-      for (DBCFile::Iterator i = gAreaDB.begin(); i != gAreaDB.end(); ++i)
-      {
-        if (i->getInt(AreaDB::Continent) == mapID)
+        auto areaList = _project->ClientDatabase->AreaTableRepository->GetAllAreasForMapId(mapID);
+    	for(auto const& map : areaList)
         {
-          add_area(i->getInt(AreaDB::AreaID));
+            add_area(map.Id);
         }
-      }
     }
 
     void zone_id_browser::changeRadius(float change)
@@ -139,7 +136,8 @@ namespace Noggit
         QTreeWidgetItem* item = new QTreeWidgetItem();
 
         std::stringstream ss;
-        ss << area_id << "-" << gAreaDB.getAreaName(area_id);
+        auto area_name = _project->ClientDatabase->AreaTableRepository->GetAreaName(area_id);
+        ss << area_id << "-" << area_name[Locale::enUS];
         item->setData(0, 1, QVariant(area_id));
         item->setText(0, QString(ss.str().c_str()));
         _items.emplace(area_id, item);
@@ -152,7 +150,7 @@ namespace Noggit
     {
       QTreeWidgetItem* item = create_or_get_tree_widget_item(area_id);
 
-      std::uint32_t parent_area_id = gAreaDB.get_area_parent(area_id);
+      std::uint32_t parent_area_id = _project->ClientDatabase->AreaTableRepository->GetParentAreaId(area_id);
       
       if (parent_area_id && parent_area_id != area_id)
       {

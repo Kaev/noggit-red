@@ -49,6 +49,7 @@
 #include <limits>
 #include <variant>
 #include <noggit/Selection.h>
+#include <noggit/types/NoggitTypes.h>
 
 #include <noggit/scripting/scripting_tool.hpp>
 #include <noggit/scripting/script_settings.hpp>
@@ -1108,7 +1109,7 @@ void MapView::setupFileMenu()
           bookmark.camera_pitch = _camera.pitch()._;
           bookmark.camera_yaw = _camera.yaw()._;
           bookmark.map_id = _world->getMapID();
-          bookmark.name = gAreaDB.getAreaName(_world->getAreaID(_camera.position));
+          bookmark.name = _project->ClientDatabase->AreaTableRepository->GetAreaName(_world->getAreaID(_camera.position))[Noggit::Locale::enUS];
 
         _project->createBookmark(bookmark);
 
@@ -1120,8 +1121,9 @@ void MapView::setupFileMenu()
   , Qt::Key_G
   , [this]
                {
+          auto areaName = _project->ClientDatabase->AreaTableRepository->GetAreaName(_world->getAreaID(_camera.position))[Noggit::Locale::enUS];
                  std::ofstream f("ports.txt", std::ios_base::app);
-                 f << "Map: " << gAreaDB.getAreaName(_world->getAreaID (_camera.position)) << " on ADT " << std::floor(_camera.position.x / TILESIZE) << " " << std::floor(_camera.position.z / TILESIZE) << std::endl;
+                 f << "Map: " << areaName << " on ADT " << std::floor(_camera.position.x / TILESIZE) << " " << std::floor(_camera.position.z / TILESIZE) << std::endl;
                  f << "Trinity:" << std::endl << ".go " << (ZEROPOINT - _camera.position.z) << " " << (ZEROPOINT - _camera.position.x) << " " << _camera.position.y << " " << _world->getMapID() << std::endl;
                  f << "ArcEmu:" << std::endl << ".worldport " << _world->getMapID() << " " << (ZEROPOINT - _camera.position.z) << " " << (ZEROPOINT - _camera.position.x) << " " << _camera.position.y << " " << std::endl << std::endl;
                  f.close();
@@ -3894,8 +3896,10 @@ void MapView::tick (float dt)
 
   updateDetailInfos();
 
-  _status_area->setText
-    (QString::fromStdString (gAreaDB.getAreaName (_world->getAreaID (_camera.position))));
+
+
+  auto areaName = _project->ClientDatabase->AreaTableRepository->GetAreaName(_world->getAreaID(_camera.position));
+  _status_area->setText(QString::fromStdString (areaName[Noggit::Locale::enUS]));
 
   {
     int time ((static_cast<int>(_world->time) % 2880) / 2);

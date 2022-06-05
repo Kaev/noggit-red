@@ -1,17 +1,17 @@
 #include "ModelView.hpp"
 #include <external/qtimgui/imgui/imgui.h>
 #include <external/imguizmo/ImGuizmo.h>
-
+#include <noggit/project/CurrentProject.hpp>
 #include <vector>
 
 using namespace Noggit::Ui::Tools::PresetEditor;
 
-ModelViewer::ModelViewer(std::shared_ptr<Noggit::Project::NoggitProject> project, QWidget *parent)
+ModelViewer::ModelViewer(QWidget *parent)
 : AssetBrowser::ModelViewer(parent, Noggit::NoggitRenderContext::PRESET_EDITOR)
 , _world(nullptr)
 , _world_camera(_camera.position, _camera.yaw(), _camera.pitch())
 , _transform_gizmo(Noggit::Ui::Tools::ViewportGizmo::GizmoContext::PRESET_EDITOR)
-,_project(project)
+,_project(Noggit::Project::CurrentProject::get())
 {
 }
 

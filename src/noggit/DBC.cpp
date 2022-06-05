@@ -6,7 +6,6 @@
 #include <blizzard-archive-library/include/ClientData.hpp>
 #include <string>
 
-AreaDB gAreaDB;
 LightDB gLightDB;
 LightParamsDB gLightParamsDB;
 LightSkyboxDB gLightSkyboxDB;
@@ -16,69 +15,12 @@ LiquidTypeDB gLiquidTypeDB;
 
 void OpenDBs(std::shared_ptr<BlizzardArchive::ClientData> clientData)
 {
-  gAreaDB.open(clientData);
   gLightDB.open(clientData);
   gLightParamsDB.open(clientData);
   gLightSkyboxDB.open(clientData);
   gLightIntBandDB.open(clientData);
   gLightFloatBandDB.open(clientData);
   gLiquidTypeDB.open(clientData);
-}
-
-
-
-std::string AreaDB::getAreaName(int pAreaID)
-{
-  if (!pAreaID || pAreaID == -1)
-  {
-    return "Unknown location";
-  }    
-
-  unsigned int regionID = 0;
-  std::string areaName = "";
-  try
-  {
-    AreaDB::Record rec = gAreaDB.getByID(pAreaID);
-    areaName = rec.getLocalizedString(AreaDB::Name);
-    regionID = rec.getUInt(AreaDB::Region);
-  }
-  catch (AreaDB::NotFound)
-  {
-    areaName = "Unknown location";
-  }
-  if (regionID != 0)
-  {
-    try
-    {
-      AreaDB::Record rec = gAreaDB.getByID(regionID);
-      areaName = std::string(rec.getLocalizedString(AreaDB::Name)) + std::string(": ") + areaName;
-    }
-    catch (AreaDB::NotFound)
-    {
-      areaName = "Unknown location";
-    }
-  }
-
-  return areaName;
-}
-
-std::uint32_t AreaDB::get_area_parent(int area_id)
-{
-  // todo: differentiate between no parent and error ?
-  if (!area_id || area_id == -1)
-  {
-    return 0;
-  }
-
-  try
-  {
-    AreaDB::Record rec = gAreaDB.getByID(area_id);
-    return rec.getUInt(AreaDB::Region);
-  }
-  catch (AreaDB::NotFound)
-  {
-    return 0;
-  }
 }
 
 int LiquidTypeDB::getLiquidType(int pID)
