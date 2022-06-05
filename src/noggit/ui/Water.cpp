@@ -18,6 +18,8 @@
 #include <QtWidgets/QListWidget>
 #include <QtWidgets/QRadioButton>
 
+#include "noggit/project/CurrentProject.hpp"
+
 namespace Noggit
 {
   namespace Ui
@@ -58,14 +60,14 @@ namespace Noggit
 
       waterType = new QComboBox(this);
 
-      for (DBCFile::Iterator i = gLiquidTypeDB.begin(); i != gLiquidTypeDB.end(); ++i)
+    	auto project = Noggit::Project::CurrentProject::get();
+      auto liquidType = project->ClientDatabase->LiquidTypeRepository->GetLiquidTypes();
+
+      for (auto const& liquidTypes : liquidType)
       {
-        int liquid_id = i->getInt(LiquidTypeDB::ID);
-
-        std::stringstream ss;
-        ss << liquid_id << "-" << LiquidTypeDB::getLiquidName(liquid_id);
-        waterType->addItem (QString::fromUtf8(ss.str().c_str()), QVariant (liquid_id));
-
+          std::stringstream ss;
+          ss << liquidTypes.Id << "-" << liquidTypes.Name;
+          waterType->addItem(QString::fromUtf8(ss.str().c_str()), QVariant(liquidTypes.Id));
       }
 
       connect (waterType, qOverload<int> (&QComboBox::currentIndexChanged)
@@ -244,8 +246,9 @@ namespace Noggit
 
     void water::updateData()
     {
+    	auto project = Noggit::Project::CurrentProject::get();
       std::stringstream mt;
-      mt << _liquid_id << " - " << LiquidTypeDB::getLiquidName(_liquid_id);
+      mt << _liquid_id << " - " << project->ClientDatabase->LiquidTypeRepository->GetLiquidNameByLiquidId(_liquid_id);
       waterType->setCurrentText (QString::fromStdString (mt.str()));
     }
 

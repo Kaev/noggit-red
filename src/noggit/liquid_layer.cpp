@@ -6,7 +6,7 @@
 #include <noggit/MapChunk.h>
 #include <noggit/Misc.h>
 #include <ClientFile.hpp>
-
+#include <noggit/project/CurrentProject.hpp>
 #include <algorithm>
 #include <string>
 
@@ -371,12 +371,12 @@ void liquid_layer::save(sExtendableArray& adt, int base_pos, int& info_pos, int&
 void liquid_layer::changeLiquidID(int id)
 {
   _liquid_id = id;
-
+  auto project = Noggit::Project::CurrentProject::get();
   try
   {
-    DBCFile::Record lLiquidTypeRow = gLiquidTypeDB.getByID(_liquid_id);
+    auto liquidType =  project->ClientDatabase->LiquidTypeRepository->GetLiquidTypeByLiquidId(_liquid_id);
 
-    switch (lLiquidTypeRow.getInt(LiquidTypeDB::Type))
+    switch (liquidType)
     {
     case 2: // magma
     case 3: // slime

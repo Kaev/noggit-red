@@ -6,6 +6,8 @@
 #include <noggit/ui/tools/NodeEditor/Nodes/DataTypes/GenericData.hpp>
 #include <noggit/DBC.h>
 
+#include <noggit/project/CurrentProject.hpp>
+
 using namespace Noggit::Ui::Tools::NodeEditor::Nodes;
 
 SetWaterTypeNode::SetWaterTypeNode()
@@ -17,13 +19,14 @@ SetWaterTypeNode::SetWaterTypeNode()
 
   _liquid_type = new QComboBox(&_embedded_widget);
 
-  for (DBCFile::Iterator i = gLiquidTypeDB.begin(); i != gLiquidTypeDB.end(); ++i)
-  {
-    int liquid_id = i->getInt(LiquidTypeDB::ID);
+  auto project = Noggit::Project::CurrentProject::get();
+  auto liquidType = project->ClientDatabase->LiquidTypeRepository->GetLiquidTypes();
 
-    std::stringstream ss;
-    ss << liquid_id << "-" << LiquidTypeDB::getLiquidName(liquid_id);
-    _liquid_type->addItem (QString::fromUtf8(ss.str().c_str()), QVariant (liquid_id));
+  for(auto const &liquidTypes : liquidType)
+  {
+      std::stringstream ss;
+      ss << liquidTypes.Id << "-" << liquidTypes.Name;
+      _liquid_type->addItem(QString::fromUtf8(ss.str().c_str()), QVariant(liquidTypes.Id));
   }
 
   addWidgetTop(_liquid_type);

@@ -11,7 +11,6 @@ LightParamsDB gLightParamsDB;
 LightSkyboxDB gLightSkyboxDB;
 LightIntBandDB gLightIntBandDB;
 LightFloatBandDB gLightFloatBandDB;
-LiquidTypeDB gLiquidTypeDB;
 
 void OpenDBs(std::shared_ptr<BlizzardArchive::ClientData> clientData)
 {
@@ -20,36 +19,4 @@ void OpenDBs(std::shared_ptr<BlizzardArchive::ClientData> clientData)
   gLightSkyboxDB.open(clientData);
   gLightIntBandDB.open(clientData);
   gLightFloatBandDB.open(clientData);
-  gLiquidTypeDB.open(clientData);
-}
-
-int LiquidTypeDB::getLiquidType(int pID)
-{
-  int type = 0;
-  try
-  {
-    LiquidTypeDB::Record rec = gLiquidTypeDB.getByID(pID);
-    type = rec.getUInt(LiquidTypeDB::Type);
-  }
-  catch (LiquidTypeDB::NotFound)
-  {
-    type = 0;
-  }
-  return type;
-}
-
-std::string  LiquidTypeDB::getLiquidName(int pID)
-{
-  std::string type = "";
-  try
-  {
-    LiquidTypeDB::Record rec = gLiquidTypeDB.getByID(pID);
-    type = std::string(rec.getString(LiquidTypeDB::Name));
-  }
-  catch (LiquidTypeDB::NotFound)
-  {
-    type = "Unknown type";
-  }
-
-  return type;
 }
