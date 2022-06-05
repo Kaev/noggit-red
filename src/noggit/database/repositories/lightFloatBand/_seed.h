@@ -50,7 +50,7 @@ namespace Noggit::Database::Repositories
 
 				for (auto dataIndex = 18; dataIndex < 34; dataIndex++)
 				{
-					entry.Timings[dataIndex - 18] = query.getColumn(dataIndex).getDouble();
+					entry.Data[dataIndex - 18] = query.getColumn(dataIndex).getDouble();
 				}
 			}
 
