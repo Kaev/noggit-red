@@ -45,12 +45,12 @@ namespace Noggit::Database::Repositories
 
 				for (int doodadIdIndex = 1; doodadIdIndex < 5; doodadIdIndex++)
 				{
-					entry.Density = query.getColumn(doodadIdIndex).getInt();
+					entry.DoodadIds[doodadIdIndex - 1] = query.getColumn(doodadIdIndex).getInt();
 				}
 
 				for (int doodadWeightIndex = 5; doodadWeightIndex < 9; doodadWeightIndex++)
 				{
-					entry.Density = query.getColumn(doodadWeightIndex).getInt();
+					entry.DoodadWeights[doodadWeightIndex -5] = query.getColumn(doodadWeightIndex).getInt();
 				}
 
 				entry.Density = query.getColumn(9).getInt();
