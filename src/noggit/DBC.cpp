@@ -7,7 +7,6 @@
 #include <string>
 
 AreaDB gAreaDB;
-LoadingScreensDB gLoadingScreensDB;
 LightDB gLightDB;
 LightParamsDB gLightParamsDB;
 LightSkyboxDB gLightSkyboxDB;
@@ -20,7 +19,6 @@ LiquidTypeDB gLiquidTypeDB;
 void OpenDBs(std::shared_ptr<BlizzardArchive::ClientData> clientData)
 {
   gAreaDB.open(clientData);
-  gLoadingScreensDB.open(clientData);
   gLightDB.open(clientData);
   gLightParamsDB.open(clientData);
   gLightSkyboxDB.open(clientData);

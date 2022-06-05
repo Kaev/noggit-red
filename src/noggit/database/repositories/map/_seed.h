@@ -5,22 +5,11 @@
 
 namespace Noggit::Database::Repositories
 {
-	class IRepository
-	{
-
-	};
-
-	class IMapRepository :public IRepository
-	{
-	public:
-
-	};
-
 	struct MapEntry
 	{
 		int Id;
 		std::string Directory;
-		LocaleString Name;		
+		LocaleString Name;
 		int InstanceType;
 		int ExpansionId;
 		int Flags;
@@ -38,7 +27,27 @@ namespace Noggit::Database::Repositories
 		int MaxPlayers;
 	};
 
-	class WotlkMapRepository : IMapRepository
+	class IRepository
+	{
+
+	};
+
+	class IMapRepository : public IRepository
+	{
+	public:
+		virtual int CreateLocaleString(LocaleString string) = 0;
+		virtual void UpdateLocaleString(LocaleString string) = 0;
+		virtual LocaleString GetLocaleString(int id) = 0;
+		virtual std::vector<MapEntry> GetMapList() = 0;
+		virtual std::string GetMapDirectory(int mapId) = 0;
+		virtual bool DoesMapAlreadyExistWithName(std::string name) = 0;
+		virtual void SaveMap(MapEntry entry) = 0;
+		virtual MapEntry CreateMap(MapEntry entry) = 0;
+		virtual MapEntry GetMapById(int id) = 0;
+		virtual void DeleteMap(int id) = 0;
+	};
+
+	class WotlkMapRepository : public IMapRepository
 	{
 		std::filesystem::path _databasePath;
 	public:
@@ -47,7 +56,7 @@ namespace Noggit::Database::Repositories
 		
 		}
 
-		int CreateLocaleString(LocaleString string)
+		int CreateLocaleString(LocaleString string) override
 		{
 			SQLite::Database   db(_databasePath.generic_string(), SQLite::OPEN_READWRITE);
 			SQLite::Statement  updateLocaleString(db, "INSERT INTO _localeStrings(enUS, koKR, frFR, deDE, zhCN, zhTW, esES, esMX, ruRU, jaJP, ptPT, itIT, Unk1, Unk2, Unk3, Unk4, flags)"
@@ -82,7 +91,7 @@ namespace Noggit::Database::Repositories
 			auto errorMessage = std::string(db.getErrorMsg());
 		}
 
-		void UpdateLocaleString(LocaleString string)
+		void UpdateLocaleString(LocaleString string) override
 		{
 			SQLite::Database   db(_databasePath.generic_string(), SQLite::OPEN_READWRITE);
 			SQLite::Statement  updateLocaleString(db, "UPDATE _localeStrings SET enUS = ? , koKR = ? , frFR = ? , deDE = ? ,"
@@ -114,7 +123,7 @@ namespace Noggit::Database::Repositories
 			auto errorMessage = std::string(db.getErrorMsg());
 		}
 
-		LocaleString GetLocaleString(int id)
+		LocaleString GetLocaleString(int id) override
 		{
 			SQLite::Database   db(_databasePath.generic_string());
 			SQLite::Statement  selectLocaleStringQuery(db, "SELECT enUS, koKR, frFR, deDE, zhCN, zhTW, esES, esMX, ruRU,"
@@ -142,7 +151,7 @@ namespace Noggit::Database::Repositories
 			}
 		}
 
-		std::vector<MapEntry> GetMapList()
+		std::vector<MapEntry> GetMapList() override
 		{
 			SQLite::Database   db(_databasePath.generic_string());
 			SQLite::Statement  query(db, "SELECT map.ID, map.MapName_lang, map.Directory ,map.ExpansionID, map.InstanceType FROM map WHERE map.InstanceType < 5");
@@ -164,7 +173,7 @@ namespace Noggit::Database::Repositories
 			return mapList;
 		}
 
-		std::string GetMapDirectory(int mapId)
+		std::string GetMapDirectory(int mapId) override
 		{
 			SQLite::Database   db(_databasePath.generic_string());
 			SQLite::Statement  query(db, "SELECT Directory FROM map WHERE ID = ?; ");
@@ -177,7 +186,7 @@ namespace Noggit::Database::Repositories
 			}	
 		}
 
-		bool DoesMapAlreadyExistWithName(std::string name)
+		bool DoesMapAlreadyExistWithName(std::string name) override
 		{
 			SQLite::Database   db(_databasePath.generic_string());
 			SQLite::Statement  query(db, "SELECT 1 FROM map WHERE Directory = ?; ");
@@ -192,7 +201,7 @@ namespace Noggit::Database::Repositories
 			return false;
 		}
 
-		void SaveMap(MapEntry entry)
+		void SaveMap(MapEntry entry) override
 		{
 			SQLite::Database   db(_databasePath.generic_string(), SQLite::OPEN_READWRITE);
 			SQLite::Statement  updateQuery(db, "UPDATE Map SET Directory = ? , InstanceType = ? , Flags = ? , PVP = ? ,"
@@ -223,7 +232,7 @@ namespace Noggit::Database::Repositories
 			updateQuery.exec();
 		}
 
-		MapEntry CreateMap(MapEntry entry)
+		MapEntry CreateMap(MapEntry entry) override
 		{
 			auto nextRecordId = 0;
 		
@@ -270,7 +279,7 @@ namespace Noggit::Database::Repositories
 			return entry;
 		}
 
-		MapEntry GetMapById(int id)
+		MapEntry GetMapById(int id) override
 		{
 			SQLite::Database   db(_databasePath.generic_string());
 			SQLite::Statement  query(db, "SELECT Directory, InstanceType, Flags, PVP, MapName_lang,AreaTableID, MapDescription0_lang,"
@@ -308,7 +317,7 @@ namespace Noggit::Database::Repositories
 			}
 		} 
 
-		void DeleteMap(int id)
+		void DeleteMap(int id) override
 		{
 			SQLite::Database   db(_databasePath.generic_string(), SQLite::OPEN_READWRITE);
 			SQLite::Statement  getLocaleStrings(db, "SELECT MapName_lang, MapDescription0_lang, MapDescription1_lang FROM Map WHERE ID = ? ");
@@ -334,7 +343,7 @@ namespace Noggit::Database::Repositories
 		}
 	};
 
-	class ShadowlandsMapRepository : IMapRepository
+	class ShadowlandsMapRepository : public IMapRepository
 	{
 		std::filesystem::path _databasePath;
 	public:
@@ -342,5 +351,16 @@ namespace Noggit::Database::Repositories
 		{
 
 		}
+
+		int CreateLocaleString(LocaleString string) override {};
+		void UpdateLocaleString(LocaleString string) override {};
+		LocaleString GetLocaleString(int id) override {};
+		std::vector<MapEntry> GetMapList() override {};
+		std::string GetMapDirectory(int mapId) override {};
+		bool DoesMapAlreadyExistWithName(std::string name) override {};
+		void SaveMap(MapEntry entry) override {};
+		MapEntry CreateMap(MapEntry entry) override {};
+		MapEntry GetMapById(int id) override {};
+		void DeleteMap(int id) override {};
 	};
 }

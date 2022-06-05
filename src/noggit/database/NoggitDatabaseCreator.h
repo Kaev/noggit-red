@@ -29,7 +29,18 @@
 #include <noggit/types/NoggitTypes.h>
 
 #include <noggit/database/repositories/map/_seed.h>    
-
+#include <noggit/database/repositories/areaTable/_seed.h>    
+#include <noggit/database/repositories/loadingScreen/_seed.h>
+#include <noggit/database/repositories/liquidType/_seed.h>    
+#include <noggit/database/repositories/light/_seed.h>    
+#include <noggit/database/repositories/lightFloatBand/_seed.h>    
+#include <noggit/database/repositories/lightIntBand/_seed.h>    
+#include <noggit/database/repositories/lightParams/_seed.h>    
+#include <noggit/database/repositories/lightIntBand/_seed.h>    
+#include <noggit/database/repositories/lightSkybox/_seed.h>   
+#include <noggit/database/repositories/groundEffectDoodad/_seed.h>    
+#include <noggit/database/repositories/groundEffectTexture/_seed.h>    
+ 
 namespace Noggit::Database
 {
     enum class TableColumnFlags : int
@@ -60,12 +71,32 @@ namespace Noggit::Database
 
     struct ApplicationProjectRepositories
     {
+        //these will become interfaces
         std::shared_ptr<Repositories::WotlkMapRepository> MapRepository;
-
+        std::shared_ptr<Repositories::WotlkLoadingScreenRepository> LoadingScreenRepository;
+        std::shared_ptr<Repositories::WotlkAreaTableRepository>AreaTableRepository;
+        std::shared_ptr<Repositories::WotlkLiquidTypeRepository> LiquidTypeRepository;
+        std::shared_ptr<Repositories::WotlkGroundEffectDoodadRepository> GroundEffectDoodadRepository;
+        std::shared_ptr<Repositories::WotlkGroundEffectTextureRepository> GroundEffectTextureRepository;
+        std::shared_ptr<Repositories::WotlkLightRepository> LightRepository;
+        std::shared_ptr<Repositories::WotlkLightParamsRepository> LightParamsRepository;
+        std::shared_ptr<Repositories::WotlkLightSkyBoxRepository> LightSkyBoxRepository;
+        std::shared_ptr<Repositories::WotlkLightIntBandRepository> LightIntBandRepository;
+        std::shared_ptr<Repositories::WotlkLightFloatBandRepository> LightFloatBandRepository;
 
         ApplicationProjectRepositories(std::filesystem::path const& database_path)
         {
-            MapRepository = std::make_shared<Repositories::WotlkMapRepository>(database_path);
+            MapRepository = std::make_shared<Repositories::WotlkMapRepository>(database_path); 
+            LoadingScreenRepository = std::make_shared<Repositories::WotlkLoadingScreenRepository>(database_path);
+            AreaTableRepository = std::make_shared<Repositories::WotlkAreaTableRepository>(database_path);
+            LiquidTypeRepository = std::make_shared<Repositories::WotlkLiquidTypeRepository>(database_path);
+            GroundEffectDoodadRepository = std::make_shared<Repositories::WotlkGroundEffectDoodadRepository>(database_path);
+            GroundEffectTextureRepository = std::make_shared<Repositories::WotlkGroundEffectTextureRepository>(database_path);
+            LightRepository = std::make_shared<Repositories::WotlkLightRepository>(database_path);
+            LightParamsRepository = std::make_shared<Repositories::WotlkLightParamsRepository>(database_path);
+            LightSkyBoxRepository = std::make_shared<Repositories::WotlkLightSkyBoxRepository>(database_path);
+            LightIntBandRepository = std::make_shared<Repositories::WotlkLightIntBandRepository>(database_path);
+            LightFloatBandRepository = std::make_shared<Repositories::WotlkLightFloatBandRepository>(database_path);
         }
     };
 

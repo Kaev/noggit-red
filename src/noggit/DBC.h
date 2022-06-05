@@ -24,19 +24,6 @@ public:
   static std::uint32_t get_area_parent(int area_id);
 };
 
-class LoadingScreensDB : public DBCFile
-{
-public:
-  LoadingScreensDB() :
-    DBCFile("DBFilesClient\\LoadingScreens.dbc")
-  { }
-
-  /// Fields
-  static const size_t ID = 0;        // uint
-  static const size_t Name = 1;      // string
-  static const size_t Path = 2;      // string
-};
-
 class LightDB : public DBCFile
 {
 public:
@@ -170,7 +157,6 @@ void OpenDBs(std::shared_ptr<BlizzardArchive::ClientData> clientData);
 const char * getGroundEffectDoodad(unsigned int effectID, int DoodadNum);
 
 extern AreaDB gAreaDB;
-extern LoadingScreensDB gLoadingScreensDB;
 extern LightDB gLightDB;
 extern LightParamsDB gLightParamsDB;
 extern LightSkyboxDB gLightSkyboxDB;
