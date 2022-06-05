@@ -101,21 +101,22 @@ Sky::Sky(DBCFile::Iterator data, Noggit::NoggitRenderContext context)
 
   for (int i = 0; i < NUM_SkyFloatParamsNames; ++i)
   {
+      auto project = Noggit::Project::CurrentProject::get();
+
     try
     {
-      DBCFile::Record rec = gLightFloatBandDB.getByID(light_float_start + i);
-      int entries = rec.getInt(LightFloatBandDB::Entries);
+    	auto lightFloatBand = project->ClientDatabase->LightFloatBandRepository->GetLightFLoatBandEntryById(light_float_start + i);
 
-      if (entries == 0)
+      if (lightFloatBand.Count == 0)
       {
         mmin_float[i] = -1;
       }
       else
       {
-        mmin_float[i] = rec.getInt(LightFloatBandDB::Times);
-        for (int l = 0; l < entries; l++)
+        mmin_float[i] = lightFloatBand.Timings[0];
+        for (int l = 1; l < lightFloatBand.Count; l++)
         {
-          SkyFloatParam sc(rec.getInt(LightFloatBandDB::Times + l), rec.getFloat(LightFloatBandDB::Values + l));
+          SkyFloatParam sc(lightFloatBand.Timings[l], lightFloatBand.Data[l]);
           floatParams[i].push_back(sc);
         }
       }
@@ -123,21 +124,20 @@ Sky::Sky(DBCFile::Iterator data, Noggit::NoggitRenderContext context)
     catch (...)
     {
       LogError << "When trying to intialize sky " << data->getInt(LightDB::ID) << ", there was an error with getting an entry in a DBC (" << i << "). Sorry." << std::endl;
-      DBCFile::Record rec = gLightFloatBandDB.getByID(i);
-      int entries = rec.getInt(LightFloatBandDB::Entries);
+      auto lightFloatBand = project->ClientDatabase->LightFloatBandRepository->GetLightFLoatBandEntryById(i);
 
-      if (entries == 0)
+      if (lightFloatBand.Count == 0)
       {
         mmin_float[i] = -1;
       }
       else
       {
-        mmin_float[i] = rec.getInt(LightFloatBandDB::Times);
-        for (int l = 0; l < entries; l++)
-        {
-          SkyFloatParam sc(rec.getInt(LightFloatBandDB::Times + l), rec.getFloat(LightFloatBandDB::Values + l));
-          floatParams[i].push_back(sc);
-        }
+          mmin_float[i] = lightFloatBand.Timings[0];
+          for (int l = 1; l < lightFloatBand.Count; l++)
+          {
+              SkyFloatParam sc(lightFloatBand.Timings[l], lightFloatBand.Data[l]);
+              floatParams[i].push_back(sc);
+          }
       }
     }
   }
