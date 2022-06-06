@@ -145,19 +145,19 @@ Sky::Sky(Noggit::Database::Repositories::LightEntry light, Noggit::NoggitRenderC
 
   try
   {
-    DBCFile::Record light_param = gLightParamsDB.getByID(light_param_0);
-    int skybox_id = light_param.getInt(LightParamsDB::skybox);
 
-    _river_shallow_alpha = light_param.getFloat(LightParamsDB::water_shallow_alpha);
-    _river_deep_alpha = light_param.getFloat(LightParamsDB::water_deep_alpha);
-    _ocean_shallow_alpha = light_param.getFloat(LightParamsDB::ocean_shallow_alpha);
-    _ocean_deep_alpha = light_param.getFloat(LightParamsDB::ocean_deep_alpha);
-    _glow = light_param.getFloat(LightParamsDB::glow);
+      auto lightParam = project->ClientDatabase->LightParamsRepository->GetLightsForMapId(light_param_0);
+  
+    _river_shallow_alpha = lightParam.WaterShallowAlpha;
+    _river_deep_alpha = lightParam.WaterDeepAlpha;
+    _ocean_shallow_alpha = lightParam.OceanDeepAlpha;
+    _ocean_deep_alpha = lightParam.OceanDeepAlpha;
+    _glow = lightParam.Glow;
 
-    if (skybox_id)
+    if (lightParam.LightSkyboxId)
     {
         auto project = Noggit::Project::CurrentProject::get();
-        auto skyboxFilename = project->ClientDatabase->LightSkyBoxRepository->GetSkyboxFilenameById(skybox_id);
+        auto skyboxFilename = project->ClientDatabase->LightSkyBoxRepository->GetSkyboxFilenameById(lightParam.LightSkyboxId);
        skybox.emplace(skyboxFilename, _context);
     }
   }
