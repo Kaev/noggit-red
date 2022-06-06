@@ -671,16 +671,6 @@ void LocaleDBCEntry::setCurrentLocale(const std::string& locale)
   _show_entry->setCurrentWidget(_widget_map.at(locale));
 }
 
-void LocaleDBCEntry::fill(DBCFile::Record& record, size_t field)
-{
-  for (int loc = 0; loc < 16; ++loc)
-  {
-    setValue(record.getLocalizedString(field, loc), loc);
-  }
-
-  _flags->setValue(record.getInt(field + 16));
-}
-
 void LocaleDBCEntry::fill(Noggit::LocaleString& record)
 {
    for (int loc = 0; loc < 16; ++loc)

@@ -1,5 +1,4 @@
 #include <noggit/ui/windows/about/About.h>
-#include <noggit/DBCFile.h>
 #include <noggit/Log.h>
 #include <noggit/World.h>
 #include <noggit/ContextObject.hpp>

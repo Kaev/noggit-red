@@ -16,8 +16,6 @@
 #include <QHBoxLayout>
 #include <QStackedWidget>
 
-#include <noggit/DBCFile.h>
-
 #include <noggit/ui/minimap_widget.hpp>
 #include <noggit/ui/widget.hpp>
 #include <noggit/World.h>
@@ -43,7 +41,6 @@ namespace Noggit
 
         std::string getValue(int locale) { return  _widget_map.at(_locale_names[locale])->text().toStdString(); };
 
-        void fill(DBCFile::Record& record, size_t field);
         void fill(Noggit::LocaleString& record);
         void clear();
         void toRecord(Noggit::LocaleString& record);
