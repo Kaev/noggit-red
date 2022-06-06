@@ -217,13 +217,12 @@ namespace Noggit::Database
         transaction.commit();
     }
 
-    void ApplicationProjectDatabase::ExportDatabase(std::filesystem::path const& database_path, std::filesystem::path const& project_path,
-        std::filesystem::path const& client_path, ProjectBuildInformation& buildInformation)
+    void ApplicationProjectDatabase::ExportDatabase(std::filesystem::path const& database_path, std::filesystem::path const& project_path, ProjectVersion buildInformation)
     {
         BlizzardDatabaseLib::Structures::Build client_build("3.3.5.12340");
         auto client_archive_version = BlizzardArchive::ClientVersion::WOTLK;
         auto client_archive_locale = BlizzardArchive::Locale::AUTO;
-        if (buildInformation.Version == ProjectVersion::SL)
+        if (buildInformation == ProjectVersion::SL)
         {
             client_archive_version = BlizzardArchive::ClientVersion::SL;
             client_build = BlizzardDatabaseLib::Structures::Build("9.1.0.39584");
@@ -349,7 +348,12 @@ namespace Noggit::Database
             std::string dbd_file_directory = _configuration->ApplicationDatabaseDefinitionsPath;
             auto clientDatabase = BlizzardDatabaseLib::BlizzardDatabase(dbd_file_directory, client_build);
 
-            clientDatabase.SaveTable(project_path.generic_string(), table, databaseRowList);
+            if(!std::filesystem::exists(project_path.generic_string() + "\\DBFilesClient"))
+            {
+                std::filesystem::create_directory(project_path.generic_string() + "\\DBFilesClient");
+            }
+
+            clientDatabase.SaveTable(project_path.generic_string() + "\\DBFilesClient", table, databaseRowList);
         }
     }
 }

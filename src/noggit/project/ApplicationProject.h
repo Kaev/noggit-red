@@ -242,10 +242,10 @@ namespace Noggit::Project
           databaseCreator.CreateDatabase(databasePath, project_path, project->ClientPath, projectBuildInforamtion);
       }
 
-    
       std::string dbd_file_directory = _configuration->ApplicationDatabaseDefinitionsPath;
 
-      project->ClientDatabase = std::make_shared<Database::ApplicationProjectRepositories>(databasePath);
+      auto databaseCreator = std::make_shared<Database::ApplicationProjectDatabase>(_configuration, missingTables);
+      project->ClientDatabase = std::make_shared<Database::ApplicationProjectRepositories>(databaseCreator,databasePath);
 
       try
       {
