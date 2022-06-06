@@ -1,6 +1,5 @@
 #include <noggit/Selection.h>
 #include <noggit/MapChunk.h>
-#include <noggit/DBC.h>
 
 #include <sstream>
 #include <noggit/project/CurrentProject.hpp>

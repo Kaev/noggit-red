@@ -2,7 +2,6 @@
 #include <cmath>
 #include <functional>
 #include <utility>
-#include <noggit/DBC.h>
 #include <noggit/ui/tools/NodeEditor/Nodes/BaseNode.inl>
 #include <noggit/ui/tools/NodeEditor/Nodes/DataTypes/GenericData.hpp>
 #include "ChunkAddDetailDoodads.hpp"

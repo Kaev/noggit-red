@@ -5,7 +5,6 @@
 
 #include <math/frustum.hpp>
 #include <noggit/Brush.h> // brush
-#include <noggit/DBC.h>
 #include <noggit/Log.h>
 #include <noggit/MapChunk.h>
 #include <noggit/MapTile.h>

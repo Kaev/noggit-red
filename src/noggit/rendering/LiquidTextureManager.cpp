@@ -2,7 +2,6 @@
 
 #include "LiquidTextureManager.hpp"
 #include "opengl/context.inl"
-#include "noggit/DBC.h"
 #include "noggit/application/NoggitApplication.hpp"
 #include "noggit/project/CurrentProject.hpp"
 

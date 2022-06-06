@@ -8,8 +8,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-
-#include <noggit/DBC.h>
 #include <noggit/Misc.h>
 
 #include <noggit/TextureManager.h> // TextureManager, Texture

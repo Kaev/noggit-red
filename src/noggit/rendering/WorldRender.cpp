@@ -5,7 +5,6 @@
 #include <math/frustum.hpp>
 #include <noggit/World.h>
 #include <external/PNG2BLP/Png2Blp.h>
-#include <noggit/DBC.h>
 #include <noggit/project/CurrentProject.hpp>
 
 #include <QDir>

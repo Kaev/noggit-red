@@ -16,7 +16,6 @@
 #include <QHBoxLayout>
 #include <QStackedWidget>
 
-#include <noggit/DBC.h>
 #include <noggit/DBCFile.h>
 
 #include <noggit/ui/minimap_widget.hpp>

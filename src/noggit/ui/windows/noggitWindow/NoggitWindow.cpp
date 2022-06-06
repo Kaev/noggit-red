@@ -1,5 +1,4 @@
 #include <noggit/ui/windows/about/About.h>
-#include <noggit/DBC.h>
 #include <noggit/DBCFile.h>
 #include <noggit/Log.h>
 #include <noggit/World.h>
@@ -62,12 +61,6 @@ namespace Noggit::Ui::Windows
     title << "Noggit - " << STRPRODUCTVER;
     setWindowTitle(QString::fromStdString(title.str()));
     setWindowIcon(QIcon(":/icon"));
-
-    if (project->projectVersion == ProjectVersion::WOTLK)
-    {
-      OpenDBs(project->ClientData);
-    }
-
     setCentralWidget(_null_widget);
 
     _about = new about(this);

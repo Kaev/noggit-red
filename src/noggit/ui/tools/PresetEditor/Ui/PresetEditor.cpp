@@ -1,7 +1,6 @@
 #include "PresetEditor.hpp"
 #include <noggit/ui/FramelessWindow.hpp>
 #include <noggit/ui/FontNoggit.hpp>
-#include <noggit/DBC.h>
 #include <noggit/application/Utils.hpp>
 
 using namespace Noggit::Ui::Tools::PresetEditor::Ui;
