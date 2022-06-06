@@ -35,12 +35,11 @@
 #include <noggit/database/repositories/light/_seed.h>    
 #include <noggit/database/repositories/lightFloatBand/_seed.h>    
 #include <noggit/database/repositories/lightIntBand/_seed.h>    
-#include <noggit/database/repositories/lightParams/_seed.h>    
-#include <noggit/database/repositories/lightIntBand/_seed.h>    
+#include <noggit/database/repositories/lightParams/_seed.h>     
 #include <noggit/database/repositories/lightSkybox/_seed.h>   
 #include <noggit/database/repositories/groundEffectDoodad/_seed.h>    
 #include <noggit/database/repositories/groundEffectTexture/_seed.h>    
- 
+
 namespace Noggit::Database
 {
     enum class TableColumnFlags : int

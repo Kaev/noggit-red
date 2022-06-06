@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+#include "database/repositories/light/_seed.h"
+
 
 struct OutdoorLightStats
 {
@@ -55,7 +57,7 @@ public:
   glm::vec3 pos;
   float r1, r2;
 
-  explicit Sky(DBCFile::Iterator data, Noggit::NoggitRenderContext context);
+  explicit Sky(Noggit::Database::Repositories::LightEntry light, Noggit::NoggitRenderContext context);
 
   std::vector<SkyColor> colorRows[36];
   std::vector<SkyFloatParam> floatParams[6];

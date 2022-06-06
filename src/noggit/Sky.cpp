@@ -14,6 +14,7 @@
 #include <array>
 
 #include "project/CurrentProject.hpp"
+#include <noggit/database/repositories/light/_seed.h>
 
 const float skymul = 36.0f;
 
@@ -31,13 +32,13 @@ SkyFloatParam::SkyFloatParam(int t, float val)
 {
 }
 
-Sky::Sky(DBCFile::Iterator data, Noggit::NoggitRenderContext context)
+Sky::Sky(Noggit::Database::Repositories::LightEntry light, Noggit::NoggitRenderContext context)
 : _context(context)
 , _selected(false)
 {
-  pos = glm::vec3(data->getFloat(LightDB::PositionX) / skymul, data->getFloat(LightDB::PositionY) / skymul, data->getFloat(LightDB::PositionZ) / skymul);
-  r1 = data->getFloat(LightDB::RadiusInner) / skymul;
-  r2 = data->getFloat(LightDB::RadiusOuter) / skymul;
+  pos = glm::vec3(light.Position.X / skymul, light.Position.Y / skymul, light.Position.Z / skymul);
+  r1 = light.GameFalloffStart / skymul;
+  r2 = light.GameFalloffEnd / skymul;
 
   for (int i = 0; i < 36; ++i)
   {
@@ -51,7 +52,7 @@ Sky::Sky(DBCFile::Iterator data, Noggit::NoggitRenderContext context)
 
   global = (pos.x == 0.0f && pos.y == 0.0f && pos.z == 0.0f);
 
-  int light_param_0 = data->getInt(LightDB::DataIDs);
+  int light_param_0 = light.LightParamsId[0];
   int light_int_start = light_param_0 * NUM_SkyColorNames - 17;
 
   auto project = Noggit::Project::CurrentProject::get();
@@ -78,7 +79,7 @@ Sky::Sky(DBCFile::Iterator data, Noggit::NoggitRenderContext context)
     }
     catch (...)
     {
-      LogError << "When trying to intialize sky " << data->getInt(LightDB::ID) << ", there was an error with getting an entry in a DBC (" << i << "). Sorry." << std::endl;
+      LogError << "When trying to intialize sky " << light.LightParamsId[0] << ", there was an error with getting an entry in a DBC (" << i << "). Sorry." << std::endl;
       auto lightIntBand = project->ClientDatabase->LightIntBandRepository->GetLightIntBandEntryById(i);
 
       if (lightIntBand.Count == 0)
@@ -123,7 +124,7 @@ Sky::Sky(DBCFile::Iterator data, Noggit::NoggitRenderContext context)
     }
     catch (...)
     {
-      LogError << "When trying to intialize sky " << data->getInt(LightDB::ID) << ", there was an error with getting an entry in a DBC (" << i << "). Sorry." << std::endl;
+      LogError << "When trying to intialize sky " << light.LightParamsId[0] << ", there was an error with getting an entry in a DBC (" << i << "). Sorry." << std::endl;
       auto lightFloatBand = project->ClientDatabase->LightFloatBandRepository->GetLightFLoatBandEntryById(i);
 
       if (lightFloatBand.Count == 0)
@@ -281,31 +282,33 @@ Skies::Skies(unsigned int mapid, Noggit::NoggitRenderContext context)
   , _context(context)
 {
   bool has_global = false;
-  for (DBCFile::Iterator i = gLightDB.begin(); i != gLightDB.end(); ++i)
-  {
-    if (mapid == i->getUInt(LightDB::Map))
-    {
-      Sky s(i, _context);
-      skies.push_back(s);
-      numSkies++;
 
-      if (s.pos == glm::vec3(0, 0, 0))
-        has_global = true;
+  auto project = Noggit::Project::CurrentProject::get();
+  auto lights = project->ClientDatabase->LightRepository->GetLightsForMapId(mapid);
+
+
+	for(auto const& light: lights)
+    {
+        Sky s(light, _context);
+        skies.push_back(s);
+        numSkies++;
+
+        if (s.pos == glm::vec3(0, 0, 0))
+            has_global = true;
     }
-  }
 
   if (!has_global)
   {
-    for (DBCFile::Iterator i = gLightDB.begin(); i != gLightDB.end(); ++i)
-    {
-      if (1 == i->getUInt(LightDB::ID))
+      for (auto const& light : lights)
       {
-        Sky s(i, _context);
-        skies.push_back(s);
-        numSkies++;
-        break;
+          if (1 == light.Id)
+          {
+              Sky s(light, _context);
+              skies.push_back(s);
+              numSkies++;
+              break;
+          }
       }
-    }
   }
 
   // sort skies from smallest to largest; global last.

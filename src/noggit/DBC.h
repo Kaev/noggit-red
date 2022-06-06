@@ -5,24 +5,6 @@
 #include <noggit/DBCFile.h>
 #include <string>
 
-class LightDB : public DBCFile
-{
-public:
-  LightDB() :
-    DBCFile("DBFilesClient\\Light.dbc")
-  { }
-
-  /// Fields
-  static const size_t ID = 0;        // uint
-  static const size_t Map = 1;      // uint
-  static const size_t PositionX = 2;    // float
-  static const size_t PositionY = 3;    // float
-  static const size_t PositionZ = 4;    // float
-  static const size_t RadiusInner = 5;  // float
-  static const size_t RadiusOuter = 6;  // float
-  static const size_t DataIDs = 7;    // uint[8]
-};
-
 class LightParamsDB : public DBCFile{
 public:
   LightParamsDB() :
@@ -43,8 +25,6 @@ public:
 };
 
 
-
 void OpenDBs(std::shared_ptr<BlizzardArchive::ClientData> clientData);
 
-extern LightDB gLightDB;
 extern LightParamsDB gLightParamsDB;

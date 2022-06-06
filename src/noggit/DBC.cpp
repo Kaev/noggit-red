@@ -6,12 +6,10 @@
 #include <blizzard-archive-library/include/ClientData.hpp>
 #include <string>
 
-LightDB gLightDB;
 LightParamsDB gLightParamsDB;
 
 
 void OpenDBs(std::shared_ptr<BlizzardArchive::ClientData> clientData)
 {
-  gLightDB.open(clientData);
   gLightParamsDB.open(clientData);
 }
