@@ -102,6 +102,14 @@ namespace Noggit::Ui::Windows
                      }
     );
 
+    auto patch_menu(_menuBar->addMenu("&Patch"));
+    auto exportDbc_menu(patch_menu->addAction("Export Database (dbc)"));
+    QObject::connect(exportDbc_menu, &QAction::triggered, [&]
+        {
+            _project->ClientDatabase->ProjectDatabase->ExportDatabase(_project->databasePath, _project->ProjectPath, _project->projectVersion);
+        }
+    );
+
     _menuBar->adjustSize();
 
     _buildMapListComponent = std::make_unique<Component::BuildMapListComponent>();
