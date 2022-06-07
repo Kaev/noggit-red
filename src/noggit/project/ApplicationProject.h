@@ -247,10 +247,16 @@ namespace Noggit::Project
       auto databaseCreator = std::make_shared<Database::ApplicationProjectDatabase>(_configuration, missingTables);
       project->ClientDatabase = std::make_shared<Database::ApplicationProjectRepositories>(databaseCreator,databasePath);
 
+      auto workspacePath = project_path.generic_string() + "\\workspace";
+      if (!std::filesystem::exists(workspacePath))
+      {
+          std::filesystem::create_directory(workspacePath);
+      }
+
       try
       {
         project->ClientData = std::make_shared<BlizzardArchive::ClientData>(
-            project->ClientPath, client_archive_version, client_archive_locale, project_path.generic_string() + "\\workspace");
+            project->ClientPath, client_archive_version, client_archive_locale, workspacePath);
       }
       catch (BlizzardArchive::Exceptions::Locale::LocaleNotFoundError& e)
       {
