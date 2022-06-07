@@ -83,7 +83,7 @@ MapCreationWizard::MapCreationWizard(std::shared_ptr<Project::NoggitProject> pro
           continue;
 
       _corpse_map_id->addItem(QString::number(map_id) + " - " + QString::fromUtf8(name.c_str()));
-      _corpse_map_id->setItemData(count + 1, QVariant(map_id));
+      _corpse_map_id->setItemData(count, QVariant(map_id));
 
       count++;
   }
@@ -150,9 +150,17 @@ MapCreationWizard::MapCreationWizard(std::shared_ptr<Project::NoggitProject> pro
   _map_desc_horde = new LocaleDBCEntry(_map_settings);
   map_settings_layout->addRow("Description (Horde):",_map_desc_horde);
 
-  _loading_screen  = new QSpinBox(_map_settings);
+  _loading_screen  = new QComboBox(_map_settings);
+  auto loadingScreens = project->ClientDatabase->LoadingScreenRepository->GetLoadingScreens();
+  int countl = 0;
+  for(auto const & loadingscreen : loadingScreens)
+  {
+      _loading_screen->addItem(QString::fromStdString(loadingscreen.Name));
+      _loading_screen->setItemData(countl, QVariant(loadingscreen.Id));
+      countl++;
+  }
   map_settings_layout->addRow("Loading screen:",_loading_screen);
-  _loading_screen->setMaximum(std::numeric_limits<std::int32_t>::max());
+  
 
    _minimap_icon_scale = new QDoubleSpinBox(_map_settings);
   map_settings_layout->addRow("Minimap icon scale:",_minimap_icon_scale);
@@ -333,7 +341,15 @@ void MapCreationWizard::selectMap(int map_id)
   _map_desc_alliance->fill(mapEntry.AllianceMapDescription);
   _map_desc_horde->fill(mapEntry.HordeMapDescription);
   _area_table_id->setValue(mapEntry.AreaTableId);
-  _loading_screen->setValue(mapEntry.LoadingScreenId);
+
+  for (int i = 0; i < _loading_screen->count(); ++i)
+  {
+      auto index = _loading_screen->itemData(i);
+      if (index.toInt() == mapEntry.LoadingScreenId)
+      {
+          _loading_screen->setCurrentIndex(i);
+      }
+  }
   _minimap_icon_scale->setValue(mapEntry.MiniMapScale);
 
   int corpse_map_idx = mapEntry.CorpseMapId;
@@ -435,7 +451,7 @@ void MapCreationWizard::saveCurrentEntry()
       newMap.Directory = _directory->text().toStdString();
       newMap.InstanceType = _instance_type->itemData(_instance_type->currentIndex()).toInt();
       newMap.AreaTableId = _area_table_id->value();
-      newMap.LoadingScreenId = _loading_screen->value();
+      newMap.LoadingScreenId = _loading_screen->itemData(_loading_screen->currentIndex()).toInt();
       newMap.CorpseMapId = _corpse_map_id->itemData(_corpse_map_id->currentIndex()).toInt();
       newMap.TimeDayOverride = _time_of_day_override->value();
       newMap.ExpansionId = _expansion_id->itemData(_expansion_id->currentIndex()).toInt();
@@ -462,7 +478,7 @@ void MapCreationWizard::saveCurrentEntry()
       currentMap.Directory = _directory->text().toStdString();
       currentMap.InstanceType = _instance_type->itemData(_instance_type->currentIndex()).toInt();
       currentMap.AreaTableId = _area_table_id->value();
-      currentMap.LoadingScreenId = _loading_screen->value();
+      currentMap.LoadingScreenId = _loading_screen->itemData(_loading_screen->currentIndex()).toInt();
       currentMap.CorpseMapId = _corpse_map_id->itemData(_corpse_map_id->currentIndex()).toInt();
       currentMap.TimeDayOverride = _time_of_day_override->value();
       currentMap.ExpansionId = _expansion_id->itemData(_expansion_id->currentIndex()).toInt();
@@ -553,7 +569,7 @@ void MapCreationWizard::addNewMap()
   _map_desc_alliance->clear();
   _map_desc_horde->clear();
 
-  _loading_screen->setValue(0);
+  _loading_screen->setCurrentIndex(0);
   _minimap_icon_scale->setValue(0.0f);
 
   _corpse_map_id->setCurrentIndex(0);

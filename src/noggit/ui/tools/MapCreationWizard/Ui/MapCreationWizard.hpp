@@ -108,7 +108,7 @@ namespace Noggit
       LocaleDBCEntry* _map_desc_alliance;
       LocaleDBCEntry* _map_desc_horde;
 
-      QSpinBox* _loading_screen;
+      QComboBox* _loading_screen;
       QDoubleSpinBox* _minimap_icon_scale;
       QComboBox *_corpse_map_id;
 
