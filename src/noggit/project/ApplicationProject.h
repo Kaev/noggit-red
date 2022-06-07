@@ -250,7 +250,7 @@ namespace Noggit::Project
       try
       {
         project->ClientData = std::make_shared<BlizzardArchive::ClientData>(
-            project->ClientPath, client_archive_version, client_archive_locale, project_path.generic_string());
+            project->ClientPath, client_archive_version, client_archive_locale, project_path.generic_string() + "\\workspace");
       }
       catch (BlizzardArchive::Exceptions::Locale::LocaleNotFoundError& e)
       {
