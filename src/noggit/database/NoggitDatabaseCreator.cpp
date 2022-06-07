@@ -348,12 +348,20 @@ namespace Noggit::Database
             std::string dbd_file_directory = _configuration->ApplicationDatabaseDefinitionsPath;
             auto clientDatabase = BlizzardDatabaseLib::BlizzardDatabase(dbd_file_directory, client_build);
 
-            if(!std::filesystem::exists(project_path.generic_string() + "\\DBFilesClient"))
+            auto workspacePath = project_path.generic_string() + "\\workspace";
+            auto dbcOutputPath = workspacePath + "\\DBFilesClient";
+
+            if (!std::filesystem::exists(workspacePath))
             {
-                std::filesystem::create_directory(project_path.generic_string() + "\\DBFilesClient");
+                std::filesystem::create_directory(workspacePath);
             }
 
-            clientDatabase.SaveTable(project_path.generic_string() + "\\DBFilesClient", table, databaseRowList);
+            if(!std::filesystem::exists(dbcOutputPath))
+            {
+                std::filesystem::create_directory(dbcOutputPath);
+            }
+
+            clientDatabase.SaveTable(dbcOutputPath, table, databaseRowList);
         }
     }
 }
