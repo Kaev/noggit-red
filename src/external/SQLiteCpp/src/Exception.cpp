@@ -16,32 +16,32 @@
 namespace SQLite
 {
 
-Exception::Exception(const char* aErrorMessage, int ret) :
-    std::runtime_error(aErrorMessage),
-    mErrcode(ret),
-    mExtendedErrcode(-1)
-{
-}
+    Exception::Exception(const char* aErrorMessage, int ret) :
+        std::runtime_error(aErrorMessage),
+        mErrcode(ret),
+        mExtendedErrcode(-1)
+    {
+    }
 
-Exception::Exception(sqlite3* apSQLite) :
-    std::runtime_error(sqlite3_errmsg(apSQLite)),
-    mErrcode(sqlite3_errcode(apSQLite)),
-    mExtendedErrcode(sqlite3_extended_errcode(apSQLite))
-{
-}
+    Exception::Exception(sqlite3* apSQLite) :
+        std::runtime_error(sqlite3_errmsg(apSQLite)),
+        mErrcode(sqlite3_errcode(apSQLite)),
+        mExtendedErrcode(sqlite3_extended_errcode(apSQLite))
+    {
+    }
 
-Exception::Exception(sqlite3* apSQLite, int ret) :
-    std::runtime_error(sqlite3_errmsg(apSQLite)),
-    mErrcode(ret),
-    mExtendedErrcode(sqlite3_extended_errcode(apSQLite))
-{
-}
+    Exception::Exception(sqlite3* apSQLite, int ret) :
+        std::runtime_error(sqlite3_errmsg(apSQLite)),
+        mErrcode(ret),
+        mExtendedErrcode(sqlite3_extended_errcode(apSQLite))
+    {
+    }
 
-// Return a string, solely based on the error code
-const char* Exception::getErrorStr() const noexcept
-{
-    return sqlite3_errstr(mErrcode);
-}
+    // Return a string, solely based on the error code
+    const char* Exception::getErrorStr() const noexcept
+    {
+        return sqlite3_errstr(mErrcode);
+    }
 
 
 }  // namespace SQLite

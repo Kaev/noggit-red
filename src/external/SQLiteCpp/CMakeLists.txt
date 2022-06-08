@@ -322,37 +322,7 @@ install(FILES
 
 # Optional additional targets:
 
-option(SQLITECPP_RUN_CPPLINT "Run cpplint.py tool for Google C++ StyleGuide." ON)
-if (SQLITECPP_RUN_CPPLINT)
-    find_package(PythonInterp)
-    if (PYTHONINTERP_FOUND)
-        # add a cpplint target to the "all" target
-        add_custom_target(SQLiteCpp_cpplint
-         ALL
-         COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/cpplint.py ${CPPLINT_ARG_OUTPUT} ${CPPLINT_ARG_VERBOSE} ${CPPLINT_ARG_LINELENGTH} ${SQLITECPP_SRC} ${SQLITECPP_INC}
-        )
-    endif (PYTHONINTERP_FOUND)
-else (SQLITECPP_RUN_CPPLINT)
-    message(STATUS "SQLITECPP_RUN_CPPLINT OFF")
-endif (SQLITECPP_RUN_CPPLINT)
 
-option(SQLITECPP_RUN_CPPCHECK "Run cppcheck C++ static analysis tool." ON)
-if (SQLITECPP_RUN_CPPCHECK)
-    find_program(CPPCHECK_EXECUTABLE NAMES cppcheck)
-    if (CPPCHECK_EXECUTABLE)
-        # add a cppcheck target to the "all" target
-        add_custom_target(SQLiteCpp_cppcheck
-         ALL
-         COMMAND ${CPPCHECK_EXECUTABLE} -j 8 cppcheck --enable=style --quiet ${CPPCHECK_ARG_TEMPLATE} ${PROJECT_SOURCE_DIR}/src
-        )
-        execute_process(COMMAND "${CPPCHECK_EXECUTABLE}" --version OUTPUT_VARIABLE CPPCHECK_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
-        message(STATUS "Found Cppcheck: ${CPPCHECK_EXECUTABLE} ${CPPCHECK_VERSION}")
-    else (CPPCHECK_EXECUTABLE)
-        message(STATUS "Could NOT find cppcheck")
-    endif (CPPCHECK_EXECUTABLE)
-else (SQLITECPP_RUN_CPPCHECK)
-    message(STATUS "SQLITECPP_RUN_CPPCHECK OFF")
-endif (SQLITECPP_RUN_CPPCHECK)
 
 option(SQLITECPP_RUN_DOXYGEN "Run Doxygen C++ documentation tool." OFF)
 if (SQLITECPP_RUN_DOXYGEN)

@@ -10,14 +10,14 @@
  * Distributed under the MIT License (MIT) (See accompanying file LICENSE.txt
  * or copy at http://opensource.org/licenses/MIT)
  */
-/**
- * @defgroup SQLiteCpp SQLiteC++
- * @brief    SQLiteC++ is a smart and simple C++ SQLite3 wrapper. This file is only "easy include" for other files.
- */
+ /**
+  * @defgroup SQLiteCpp SQLiteC++
+  * @brief    SQLiteC++ is a smart and simple C++ SQLite3 wrapper. This file is only "easy include" for other files.
+  */
 #pragma once
 
 
-// Include useful headers of SQLiteC++
+  // Include useful headers of SQLiteC++
 #include <SQLiteCpp/Assertion.h>
 #include <SQLiteCpp/Exception.h>
 #include <SQLiteCpp/Database.h>
