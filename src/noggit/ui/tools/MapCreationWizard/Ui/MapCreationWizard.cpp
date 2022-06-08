@@ -460,7 +460,7 @@ void MapCreationWizard::saveCurrentEntry()
       newMap.MiniMapScale = static_cast<float>(_minimap_icon_scale->value());
       newMap.Corpse_X = static_cast<float>(_corpse_x->value());
       newMap.Corpse_Y = static_cast<float>(_corpse_y->value());
-
+      newMap.Flags = _sort_by_size_cat->isChecked() ? 16 : 0;
       newMap.Name = LocaleString();
       newMap.AllianceMapDescription = LocaleString();
       newMap.HordeMapDescription = LocaleString();
@@ -469,7 +469,7 @@ void MapCreationWizard::saveCurrentEntry()
       _map_desc_alliance->toRecord(newMap.AllianceMapDescription);
       _map_desc_horde->toRecord(newMap.HordeMapDescription);
 
-      _project->ClientDatabase->MapRepository->CreateMap(newMap);
+  	  _project->ClientDatabase->MapRepository->CreateMap(newMap);
   }
   else
   {
@@ -569,15 +569,16 @@ void MapCreationWizard::addNewMap()
   _map_desc_alliance->clear();
   _map_desc_horde->clear();
 
+
   _loading_screen->setCurrentIndex(0);
-  _minimap_icon_scale->setValue(0.0f);
+  _minimap_icon_scale->setValue(1.0f);
 
   _corpse_map_id->setCurrentIndex(0);
 
 
   _corpse_x->setValue(0.0f);
   _corpse_y->setValue(0.0f);
-  _time_of_day_override->setValue(0);
+  _time_of_day_override->setValue(-1);
   _expansion_id->setCurrentIndex(0);
   _raid_offset->setValue(0);
   _max_players->setValue(0);
