@@ -15,7 +15,7 @@
 #include <memory>
 #include <unordered_set>
 #include <QWidget>
-
+#include <QThread>
 class StackedWidget;
 
 namespace Noggit::Ui
@@ -41,7 +41,7 @@ namespace Noggit::Ui::Windows
 
       QMenuBar* _menuBar;
 
-      std::unordered_set<QWidget*> displayed_widgets;
+    	std::unordered_set<QWidget*> displayed_widgets;
       void buildMenu();
     signals:
       void exitPromptOpened();

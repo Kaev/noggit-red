@@ -1743,18 +1743,6 @@ void MapView::setupAssistMenu()
       )
     }
   );
-
-  ADD_ACTION_NS(all_adts_export_menu
-      , "Export Dbc"
-      , [this]
-      {
-          makeCurrent();
-          OpenGL::context::scoped_setter const _(::gl, context());
-          _project->ClientDatabase->ProjectDatabase->ExportDatabase(_project->databasePath, _project->ProjectPath,_project->projectVersion);
-
-      }
-  );
-
   auto all_adts_import_menu(assist_menu->addMenu("Import"));
 
   ADD_ACTION_NS ( all_adts_import_menu

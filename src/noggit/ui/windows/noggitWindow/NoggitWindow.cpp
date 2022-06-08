@@ -26,6 +26,7 @@
 #include <noggit/ui/windows/noggitWindow/widgets/MapListItem.hpp>
 #include <noggit/ui/windows/noggitWindow/widgets/MapBookmarkListItem.hpp>
 #include <QtNetwork/QTcpSocket>
+#include <noggit/ui/windows/projectLoadDialog/ProjectLoadDialog.h>
 #include <sstream>
 #include <QSysInfo>
 #include <QStandardPaths>
@@ -106,7 +107,14 @@ namespace Noggit::Ui::Windows
     auto exportDbc_menu(patch_menu->addAction("Export Database (dbc)"));
     QObject::connect(exportDbc_menu, &QAction::triggered, [&]
         {
+          
             _project->ClientDatabase->ProjectDatabase->ExportDatabase(_project->databasePath, _project->ProjectPath, _project->projectVersion);
+        //Export Database
+  
+       // projectLoading->hide();
+        //Compile Cahnges to PAtch -9
+        //Move to data folder
+     
         }
     );
 
