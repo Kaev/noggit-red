@@ -19,13 +19,22 @@
 #include <noggit/ui/minimap_widget.hpp>
 #include <noggit/ui/widget.hpp>
 #include <noggit/World.h>
-
+#include <bitset>
 
 namespace Noggit
 {
 
   namespace Ui::Tools::MapCreationWizard::Ui
   {
+      enum class MapCreationFlags : uint8_t
+      {
+          EDIT_NONE = 0,
+          EDIT_ADD = 1,
+          EDIT_REMOVE = 2,
+          EDIT_GROUP = 4,
+          EDIT_SELECTION = 8,
+      	  EDIT_MOVE = 16
+      };
 
     class LocaleDBCEntry : public QWidget
     {
@@ -91,6 +100,7 @@ namespace Noggit
         std::shared_ptr<Project::NoggitProject> _project;
       Noggit::Ui::minimap_widget* _minimap_widget;
       int _selected_map;
+      QGroupBox* _map_editor_buttons;
       QGroupBox* _map_settings;
 
       // Map settings
@@ -119,6 +129,14 @@ namespace Noggit
       QComboBox* _expansion_id;
       QSpinBox* _raid_offset;
       QSpinBox* _max_players;
+
+      QPushButton* edit_remove_button;
+      QPushButton* edit_add_button;
+      QPushButton* edit_group_button;
+      QPushButton* edit_selection_button;
+      QPushButton* edit_move_button;
+
+      FlagSet<MapCreationFlags> _mapCreationEditorFlags;
 
       World* _world = nullptr;
 

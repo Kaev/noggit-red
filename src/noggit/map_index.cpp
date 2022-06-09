@@ -533,6 +533,11 @@ bool MapIndex::hasTile(const TileIndex& tile) const
   return tile.is_valid() && (mTiles[tile.z][tile.x].flags & 1);
 }
 
+bool MapIndex::tileSelected(const TileIndex& tile) const
+{
+    return tile.is_valid() && (mTiles[tile.z][tile.x].flags & 1) && mTiles[tile.z][tile.x].selected;
+}
+
 bool MapIndex::tileAwaitingLoading(const TileIndex& tile) const
 {
   return hasTile(tile) && mTiles[tile.z][tile.x].tile && !mTiles[tile.z][tile.x].tile->finishedLoading();
@@ -556,6 +561,30 @@ void MapIndex::setAdt(bool value)
 MapTile* MapIndex::getTile(const TileIndex& tile) const
 {
   return (tile.is_valid() ? mTiles[tile.z][tile.x].tile.get() : nullptr);
+}
+
+MapTileEntry* MapIndex::getTileEntry(const TileIndex& tile) 
+{
+    return (tile.is_valid() ?  &mTiles[tile.z][tile.x] : nullptr);
+}
+
+
+std::vector<std::pair<int,int>> MapIndex::getSelectedTiles() const
+{
+    auto selectedTiles = std::vector<std::pair<int, int>>();
+
+    for (int i = 0; i < 64; ++i)
+    {
+        for (int j = 0; j < 64; ++j)
+        {
+            if(mTiles[i][j].selected)
+            {
+                selectedTiles.push_back(std::make_pair(j,i));
+            }
+        }
+    }
+
+    return selectedTiles;
 }
 
 MapTile* MapIndex::getTileAbove(MapTile* tile) const
@@ -1151,6 +1180,11 @@ void MapIndex::addTile(const TileIndex& tile)
   changed = true;
 }
 
+void MapIndex::selectTile(const TileIndex& tile)
+{
+    mTiles[tile.z][tile.x].selected = true;
+}
+
 void MapIndex::removeTile(const TileIndex &tile)
 {
   mTiles[tile.z][tile.x].flags &= ~0x1;
@@ -1162,6 +1196,7 @@ void MapIndex::removeTile(const TileIndex &tile)
 
   mTiles[tile.z][tile.x].tile->changed = true;
   mTiles[tile.z][tile.x].onDisc = false;
+  mTiles[tile.z][tile.x].selected = false;
 
   changed = true;
 }

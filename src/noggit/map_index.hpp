@@ -33,13 +33,14 @@ enum class uid_fix_status
 */
 class MapTileEntry
 {
-private:
+public:
   uint32_t flags;
   std::unique_ptr<MapTile> tile;
   bool onDisc;
+  bool selected;
 
 
-  MapTileEntry() : flags(0), tile(nullptr) {}
+  MapTileEntry() : flags(0), tile(nullptr), selected(false) {}
 
   friend class MapIndex;
 };
@@ -210,6 +211,8 @@ public:
   bool hasTile(const TileIndex& index) const;
   bool tileAwaitingLoading(const TileIndex& tile) const;
   bool tileLoaded(const TileIndex& tile) const;
+  bool tileSelected(const TileIndex& tile) const;
+
 
   bool hasAdt();
   void setAdt(bool value);
@@ -218,9 +221,11 @@ public:
   void saveall (World*);
 
   MapTile* getTile(const TileIndex& tile) const;
+  MapTileEntry* getTileEntry(const TileIndex& tile);
   MapTile* getTileAbove(MapTile* tile) const;
   MapTile* getTileLeft(MapTile* tile) const;
   uint32_t getFlag(const TileIndex& tile) const;
+  std::vector<std::pair<int, int>> getSelectedTiles() const;
 
   void convert_alphamap(bool to_big_alpha);
   bool hasBigAlpha() const { return mBigAlpha; }
@@ -239,7 +244,7 @@ public:
 
   void addTile(const TileIndex& tile);
   void removeTile(const TileIndex& tile);
-
+  void selectTile(const TileIndex& tile);
   unsigned getNumExistingTiles();
 
   // todo: find out how wow choose to use the green lava in outland

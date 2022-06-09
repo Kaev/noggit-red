@@ -29,6 +29,12 @@
 #include <QMessageBox>
 
 #include <filesystem>
+#include <QToolBar>
+#include <QToolButton>
+#include <QSize>
+#include <QSizePolicy>
+
+#include "noggit/ui/FontNoggit.hpp"
 
 using namespace Noggit::Ui::Tools::MapCreationWizard::Ui;
 
@@ -50,6 +56,185 @@ MapCreationWizard::MapCreationWizard(std::shared_ptr<Project::NoggitProject> pro
   scroll_minimap->setAlignment(Qt::AlignCenter);
   scroll_minimap->setWidget(_minimap_widget);
   scroll_minimap->setWidgetResizable(true);
+
+  //Right Side Buttons
+  auto layout_right_holder_buttons = new QWidget(this);
+  layout_right_holder_buttons->setMinimumWidth(40);
+  layout_right_holder_buttons->setMaximumWidth(40);
+  layout_right_holder_buttons->setMinimumHeight(30 * 5 + (6 * 5));
+  layout_right_holder_buttons->setMaximumHeight(30 * 5 + (6 * 5));
+  layout_right_holder_buttons->setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum));
+  auto layout_right_button = new QVBoxLayout(layout_right_holder_buttons);
+  layout_right_button->setMargin(5);
+  layout_right_button->setAlignment(Qt::AlignTop);
+
+  edit_selection_button = new QPushButton(layout_right_holder_buttons);
+  edit_selection_button->setMinimumSize(30, 30);
+  edit_selection_button->setMaximumSize(30, 30);
+  edit_selection_button->setCheckable(true);
+  edit_selection_button->setChecked(true);
+  edit_selection_button->setToolTip("selection");
+  edit_selection_button->setIcon(Noggit::Ui::FontAwesomeIcon(Noggit::Ui::FontAwesome::Icons::mousepointer));
+  edit_selection_button->setIconSize(QSize(20, 20));
+
+  layout_right_button->addWidget(edit_selection_button);
+
+  edit_add_button = new QPushButton(layout_right_holder_buttons);
+  edit_add_button->setMinimumSize(30,30);
+  edit_add_button->setMaximumSize(30,30);
+  edit_add_button->setCheckable(true);
+  edit_add_button->setChecked(false);
+  edit_add_button->setToolTip("Add");
+  edit_add_button->setIcon(Noggit::Ui::FontAwesomeIcon(Noggit::Ui::FontAwesome::Icons::plus));
+  edit_add_button->setIconSize(QSize(20, 20));
+
+  layout_right_button->addWidget(edit_add_button);
+
+  edit_remove_button = new QPushButton(layout_right_holder_buttons);
+  edit_remove_button->setMinimumSize(30, 30);
+  edit_remove_button->setMaximumSize(30, 30);
+  edit_remove_button->setCheckable(true);
+  edit_remove_button->setChecked(false);
+  edit_remove_button->setToolTip("Remove");
+  edit_remove_button->setIcon(Noggit::Ui::FontNoggitIcon(Noggit::Ui::FontNoggit::Icons::minus));
+  edit_remove_button->setIconSize(QSize(20, 20));
+
+  layout_right_button->addWidget(edit_remove_button);
+
+
+  edit_move_button = new QPushButton(layout_right_holder_buttons);
+  edit_move_button->setMinimumSize(30, 30);
+  edit_move_button->setMaximumSize(30, 30);
+  edit_move_button->setCheckable(true);
+  edit_move_button->setChecked(false);
+  edit_move_button->setToolTip("Move");
+  edit_move_button->setIcon(Noggit::Ui::FontNoggitIcon(Noggit::Ui::FontNoggit::Icons::GIZMO_TRANSLATE));
+  edit_move_button->setIconSize(QSize(24, 24));
+
+  layout_right_button->addWidget(edit_move_button);
+
+  edit_group_button = new QPushButton(layout_right_holder_buttons);
+  edit_group_button->setMinimumSize(30, 30);
+  edit_group_button->setMaximumSize(30, 30);
+  edit_group_button->setCheckable(true);
+  edit_group_button->setChecked(false);
+  edit_group_button->setToolTip("group");
+  edit_group_button->setIcon(Noggit::Ui::FontNoggitIcon(Noggit::Ui::FontNoggit::Icons::GIZMO_SCALE));
+  edit_group_button->setIconSize(QSize(20, 20));
+
+  layout_right_button->addWidget(edit_group_button);
+
+ 
+  layout_right_holder_buttons->setLayout(layout_right_button);
+  layout->addWidget(layout_right_holder_buttons);
+
+  _mapCreationEditorFlags = FlagSet<MapCreationFlags>();
+  _mapCreationEditorFlags.set(MapCreationFlags::EDIT_SELECTION);
+
+  connect(edit_move_button, &QPushButton::clicked, [&]
+      {
+          if (_mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_MOVE))
+          {
+              _mapCreationEditorFlags.unSet(MapCreationFlags::EDIT_MOVE);
+          }
+          else
+          {
+              _mapCreationEditorFlags.set(MapCreationFlags::EDIT_MOVE);
+              if (_mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_ADD)
+                  || _mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_REMOVE)
+                  || _mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_SELECTION))
+              {
+                  _mapCreationEditorFlags.unSet(MapCreationFlags::EDIT_REMOVE);
+                  _mapCreationEditorFlags.unSet(MapCreationFlags::EDIT_ADD);
+                  _mapCreationEditorFlags.unSet(MapCreationFlags::EDIT_SELECTION);
+                  edit_remove_button->setChecked(false);
+                  edit_add_button->setChecked(false);
+                  edit_selection_button->setChecked(false);
+              }
+          }
+      });
+
+  connect(edit_selection_button, &QPushButton::clicked, [&]
+      {
+          if (_mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_SELECTION))
+          {
+              _mapCreationEditorFlags.unSet(MapCreationFlags::EDIT_SELECTION);
+          }
+          else
+          {
+              _mapCreationEditorFlags.set(MapCreationFlags::EDIT_SELECTION);
+              if (_mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_ADD) 
+                  || _mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_REMOVE)
+                  || _mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_MOVE))
+              {
+                  _mapCreationEditorFlags.unSet(MapCreationFlags::EDIT_REMOVE);
+              	  _mapCreationEditorFlags.unSet(MapCreationFlags::EDIT_ADD);
+              	  _mapCreationEditorFlags.unSet(MapCreationFlags::EDIT_MOVE);
+                  edit_remove_button->setChecked(false);
+                  edit_add_button->setChecked(false);
+                  edit_move_button->setChecked(false);
+              }
+          }
+      });
+
+  connect(edit_add_button, &QPushButton::clicked, [&]
+      {
+          if (_mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_ADD))
+          {
+              _mapCreationEditorFlags.unSet(MapCreationFlags::EDIT_ADD);
+          }
+          else
+          {
+              _mapCreationEditorFlags.set(MapCreationFlags::EDIT_ADD);
+			  if(_mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_REMOVE) 
+                  || _mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_SELECTION)
+                  || _mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_MOVE))
+			  {
+                     _mapCreationEditorFlags.unSet(MapCreationFlags::EDIT_REMOVE);
+                     _mapCreationEditorFlags.unSet(MapCreationFlags::EDIT_SELECTION);
+                     _mapCreationEditorFlags.unSet(MapCreationFlags::EDIT_MOVE);
+                     edit_remove_button->setChecked(false);
+                     edit_selection_button->setChecked(false);
+                     edit_move_button->setChecked(false);
+			  }
+          }
+      });
+
+  connect(edit_remove_button, &QPushButton::clicked, [&]
+      {
+          if (_mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_REMOVE))
+          {
+              _mapCreationEditorFlags.unSet(MapCreationFlags::EDIT_REMOVE);
+          }
+          else
+          {
+              _mapCreationEditorFlags.set(MapCreationFlags::EDIT_REMOVE);
+              if (_mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_ADD) 
+                  || _mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_SELECTION)
+                  || _mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_MOVE))
+              {
+                  _mapCreationEditorFlags.unSet(MapCreationFlags::EDIT_SELECTION);
+                  _mapCreationEditorFlags.unSet(MapCreationFlags::EDIT_ADD);
+                  _mapCreationEditorFlags.unSet(MapCreationFlags::EDIT_MOVE);
+                  edit_add_button->setChecked(false);
+                  edit_selection_button->setChecked(false);
+                  edit_move_button->setChecked(false);
+              }
+          }
+      });
+
+  connect(edit_group_button, &QPushButton::clicked, [&]
+      {
+          if (_mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_GROUP))
+          {
+              _mapCreationEditorFlags.unSet(MapCreationFlags::EDIT_GROUP);
+          }else
+          {
+              _mapCreationEditorFlags.set(MapCreationFlags::EDIT_GROUP);
+          }
+      });
+
+
 
   // Right side
   auto layout_right_holder = new QWidget(this);
@@ -102,6 +287,7 @@ MapCreationWizard::MapCreationWizard(std::shared_ptr<Project::NoggitProject> pro
 
   _map_settings = new QGroupBox("Map settings", this);
   layout_right->addWidget(_map_settings);
+
 
   auto map_settings_layout = new QFormLayout(_map_settings);
   _map_settings->setLayout(map_settings_layout);
@@ -257,11 +443,66 @@ MapCreationWizard::MapCreationWizard(std::shared_ptr<Project::NoggitProject> pro
 
   // Selection
 
-  QObject::connect
-      ( _minimap_widget,  &Noggit::Ui::minimap_widget::tile_clicked
+  QObject::connect( _minimap_widget,  &Noggit::Ui::minimap_widget::tile_clicked
           , [this] (QPoint tile)
         {
-          if (QApplication::keyboardModifiers().testFlag(Qt::ShiftModifier))
+          if(_mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_MOVE))
+          {
+              int x = tile.x();
+              int y = tile.y();
+
+              auto selectedTiles = _world->mapIndex.getSelectedTiles();
+              auto totalX = 0;
+              auto totalY = 0;
+              auto length = selectedTiles.size();
+
+              if (length <= 0)
+                  return;
+
+              for(auto const tileEntry : selectedTiles)
+              {
+                  auto tileX = tileEntry.first;
+                  auto tileY = tileEntry.second;
+
+                  totalX += tileX;
+                  totalY += tileY;
+              }
+
+              auto centerX = totalX / length;
+              auto centerY = totalY / length;
+
+              for (auto const tileEntry : selectedTiles)
+              {
+              	auto tileX = tileEntry.first;
+              	auto tileY = tileEntry.second;
+
+                auto vectorX = centerX - tileX;
+                auto vectorY = centerY - tileY;
+
+                auto newX = x - vectorX;
+                auto newY = y - vectorY;
+
+                if (!_world->mapIndex.hasTile(TileIndex(newX, newY)))
+                {
+                    _world->mapIndex.removeTile(TileIndex(tileX, tileY));
+                    _world->mapIndex.addTile(TileIndex(newX, newY));
+                    _world->mapIndex.selectTile(TileIndex(newX, newY));
+                }else
+                {
+                    auto tile = _world->mapIndex.getTileEntry(TileIndex(newX, newY));
+                    auto tileOld = _world->mapIndex.getTileEntry(TileIndex(tileX, tileY));
+
+                    if (!tile->selected)
+                        _world->mapIndex.removeTile(TileIndex(newX, newY));
+                    if (!tileOld->selected)
+						_world->mapIndex.removeTile(TileIndex(tileX, tileY));
+
+                    _world->mapIndex.addTile(TileIndex(newX, newY));
+                    _world->mapIndex.selectTile(TileIndex(newX, newY));
+                }
+              }
+          }
+          else if (_mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_GROUP))
           {
             int x = tile.x() - 1;
             int y = tile.y() - 1;
@@ -278,14 +519,18 @@ MapCreationWizard::MapCreationWizard(std::shared_ptr<Project::NoggitProject> pro
 
                 if (!_world->mapIndex.hasTile(TileIndex(x_final, y_final)))
                 {
-                  if (!QApplication::keyboardModifiers().testFlag(Qt::ControlModifier))
+                  if (_mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_ADD))
                   {
                     _world->mapIndex.addTile(TileIndex(x_final, y_final));
                   }
                 }
-                else if (QApplication::keyboardModifiers().testFlag(Qt::ControlModifier))
+                else if (_mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_REMOVE))
                 {
                   _world->mapIndex.removeTile(TileIndex(x_final, y_final));
+                }
+                else if (_mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_SELECTION))
+                {
+                    _world->mapIndex.selectTile(TileIndex(x_final, y_final));
                 }
               }
             }
@@ -300,14 +545,19 @@ MapCreationWizard::MapCreationWizard(std::shared_ptr<Project::NoggitProject> pro
 
             if (!_world->mapIndex.hasTile(TileIndex(x, y)))
             {
-              if (!QApplication::keyboardModifiers().testFlag(Qt::ControlModifier))
+              if (_mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_ADD))
               {
+
                 _world->mapIndex.addTile(TileIndex(x, y));
               }
             }
-            else if (QApplication::keyboardModifiers().testFlag(Qt::ControlModifier))
+            else if (_mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_REMOVE))
             {
               _world->mapIndex.removeTile(TileIndex(x, y));
+            }
+            else if (_mapCreationEditorFlags.IsSet(MapCreationFlags::EDIT_SELECTION))
+            {
+                _world->mapIndex.selectTile(TileIndex(x, y));
             }
           }
 

@@ -148,25 +148,29 @@ namespace Noggit
               TileIndex const tile (i, j);
               bool changed = false;
 
-              if (world()->mapIndex.hasTile (tile))
+              if (world()->mapIndex.hasTile(tile))
               {
-                if (world()->mapIndex.tileLoaded (tile))
-                {
-                  if (world()->mapIndex.has_unsaved_changes(tile))
+                  if (world()->mapIndex.tileLoaded(tile))
                   {
-                    changed = true;
-                  }
+                      if (world()->mapIndex.has_unsaved_changes(tile))
+                      {
+                          changed = true;
+                      }
 
-                  painter.setPen(QColor::fromRgbF(0.f, 0.f, 0.f, 0.6f));
-                }
-                else if (world()->mapIndex.isTileExternal(tile))
-                {
-                  painter.setPen(QColor::fromRgbF(1.0f, 0.7f, 0.5f, 0.6f));
-                }
-                else
-                {
-                  painter.setPen (QColor::fromRgbF (0.8f, 0.8f, 0.8f, 0.4f));
-                }
+                      painter.setPen(QColor::fromRgbF(0.f, 0.f, 0.f, 0.6f));
+                  }
+                  else if (world()->mapIndex.isTileExternal(tile))
+                  {
+                      painter.setPen(QColor::fromRgbF(1.0f, 0.7f, 0.5f, 0.6f));
+                  }
+                  else if (world()->mapIndex.tileSelected(tile))
+                  {
+                      painter.setPen(QColor(124, 230, 115, 200));
+                  }
+                  else
+                  {
+                      painter.setPen(QColor::fromRgbF(0.8f, 0.8f, 0.8f, 0.4f));
+                  }
               }
               else
               {
