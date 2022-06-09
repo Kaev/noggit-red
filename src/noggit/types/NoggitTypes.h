@@ -1,4 +1,5 @@
 #pragma once
+#include <bitset>
 
 namespace Noggit
 {
@@ -101,6 +102,41 @@ namespace Noggit
       const std::string& operator[] (const char* locale)
       {
           return values[std::string(locale)];
+      }
+  };
+
+  template <typename Flags>
+  class FlagSet {
+
+  private:
+      using TUNDER = typename std::underlying_type<Flags>::type;
+      std::bitset<std::numeric_limits<TUNDER>::max()> m_flags;
+
+  public:
+      FlagSet() = default;
+
+      template <typename... ARGS>
+      FlagSet(Flags f, ARGS... args) : FlagSet(args...)
+      {
+          set(f);
+      }
+      FlagSet& set(Flags f)
+      {
+          m_flags.set(static_cast<TUNDER>(f));
+          return *this;
+      }
+      FlagSet& unSet(Flags f)
+      {
+          m_flags.reset(static_cast<TUNDER>(f));
+          return *this;
+      }
+      bool IsSet(Flags f)
+      {
+          return m_flags.test(static_cast<TUNDER>(f));
+      }
+      FlagSet& operator|=(Flags f)
+      {
+          return set(f);
       }
   };
 
