@@ -11,6 +11,7 @@
 #include <noggit/application/Utils.hpp>
 #include <noggit/Log.h>
 
+#include <noggit/ui/windows/loadingScreenViewer/LoadingScreenViewer.h>
 #include <util/qt/overload.hpp>
 
 #include <QFormLayout>
@@ -369,6 +370,30 @@ namespace Noggit::Ui::Tools::MapCreationWizard
 
     	map_settings_layout->addWidget(new QLabel("Loading screen:"), 8, 0);
 		map_settings_layout->addWidget(_loading_screen, 8, 1);
+
+        auto viewButton = new QToolButton();
+        viewButton->setIcon(Noggit::Ui::FontAwesomeIcon(Noggit::Ui::FontAwesome::Icons::image));
+        viewButton->setIconSize(QSize(20,20));
+
+        connect(viewButton, &QToolButton::clicked
+            , [&]()
+            {
+                auto loadingScreenId = _loading_screen->itemData(_loading_screen->currentIndex()).toInt();
+                auto loadingScreen = _project->ClientDatabase->LoadingScreenRepository->GetLoadingScreen(loadingScreenId);
+                auto filename = loadingScreen.FileName;
+
+                if(_project->ClientData->exists(filename))
+                {
+                    auto loadingScreenViewer = new Windows::LoadingScreenViewer(_project, filename, this);
+                    loadingScreenViewer->show();
+                }
+
+               // _project->ClientData->
+
+               //GetImage
+            });
+
+        map_settings_layout->addWidget(viewButton,8,2);
 
         _minimap_icon_scale = new QDoubleSpinBox(_map_settings);
         map_settings_layout->addWidget(new QLabel("Minimap icon scale:"), 9, 0);
