@@ -307,7 +307,7 @@ namespace Noggit::Ui::Tools::MapCreationWizard
 
 
         _instance_type = new QComboBox(_map_settings);
-        _instance_type->addItem("None");
+        _instance_type->addItem("Continent");
         _instance_type->setItemData(0, QVariant(0));
 
         _instance_type->addItem("Instance");
@@ -327,10 +327,20 @@ namespace Noggit::Ui::Tools::MapCreationWizard
         _map_name = new Widget::LocaleStringWidget(_map_settings);
         map_settings_layout->addRow("Map name:", _map_name);
 
-        _area_table_id = new QSpinBox(_map_settings);
+        _area_table_id = new QComboBox(_map_settings);
         map_settings_layout->addRow("Area ID:", _area_table_id);
-        _area_table_id->setMaximum(std::numeric_limits<std::int32_t>::max());
-
+        int counta = 1;
+        auto areas = project->ClientDatabase->AreaTableRepository->GetAllAreas();
+        _area_table_id->addItem(QString::fromStdString("Continent Fallback"));
+        _area_table_id->setItemData(counta, QVariant(0));
+        for (auto& area : areas)
+        {
+            auto areaName = area.AreaName[Locale::enUS];
+            _area_table_id->addItem(QString::fromStdString(areaName));
+            _area_table_id->setItemData(counta, QVariant(area.Id));
+            counta++;
+        }
+      
         _map_desc_alliance = new Widget::LocaleStringWidget(_map_settings);
         map_settings_layout->addRow("Description (Alliance):", _map_desc_alliance);
 
@@ -580,7 +590,6 @@ namespace Noggit::Ui::Tools::MapCreationWizard
         }
 
         auto mapEntry = _project->ClientDatabase->MapRepository->GetMapById(map_id);
-
         _world = new World(_project, mapEntry.Directory, map_id, Noggit::NoggitRenderContext::MAP_VIEW);
         _minimap_widget->world(_world);
         _directory->setText(QString::fromStdString(mapEntry.Directory));
@@ -592,7 +601,15 @@ namespace Noggit::Ui::Tools::MapCreationWizard
         _map_name->fill(mapEntry.Name);
         _map_desc_alliance->fill(mapEntry.AllianceMapDescription);
         _map_desc_horde->fill(mapEntry.HordeMapDescription);
-        _area_table_id->setValue(mapEntry.AreaTableId);
+
+        for (int i = 0; i < _area_table_id->count(); ++i)
+        {
+            auto index = _area_table_id->itemData(i);
+            if (index.toInt() == mapEntry.AreaTableId)
+            {
+                _area_table_id->setCurrentIndex(i);
+            }
+        }
 
         for (int i = 0; i < _loading_screen->count(); ++i)
         {
@@ -703,7 +720,7 @@ namespace Noggit::Ui::Tools::MapCreationWizard
             auto newMap = Noggit::Database::Repositories::MapEntry();
             newMap.Directory = _directory->text().toStdString();
             newMap.InstanceType = _instance_type->itemData(_instance_type->currentIndex()).toInt();
-            newMap.AreaTableId = _area_table_id->value();
+            newMap.AreaTableId = _area_table_id->itemData(_area_table_id->currentIndex()).toInt();
             newMap.LoadingScreenId = _loading_screen->itemData(_loading_screen->currentIndex()).toInt();
             newMap.CorpseMapId = _corpse_map_id->itemData(_corpse_map_id->currentIndex()).toInt();
             newMap.TimeDayOverride = _time_of_day_override->value();
@@ -730,7 +747,7 @@ namespace Noggit::Ui::Tools::MapCreationWizard
 
             currentMap.Directory = _directory->text().toStdString();
             currentMap.InstanceType = _instance_type->itemData(_instance_type->currentIndex()).toInt();
-            currentMap.AreaTableId = _area_table_id->value();
+            currentMap.AreaTableId = _area_table_id->itemData(_area_table_id->currentIndex()).toInt();
             currentMap.LoadingScreenId = _loading_screen->itemData(_loading_screen->currentIndex()).toInt();
             currentMap.CorpseMapId = _corpse_map_id->itemData(_corpse_map_id->currentIndex()).toInt();
             currentMap.TimeDayOverride = _time_of_day_override->value();
@@ -817,7 +834,7 @@ namespace Noggit::Ui::Tools::MapCreationWizard
         _instance_type->setCurrentIndex(0);
 
         _map_name->clear();
-        _area_table_id->setValue(0);
+        _area_table_id->setCurrentIndex(0);
 
         _map_desc_alliance->clear();
         _map_desc_horde->clear();

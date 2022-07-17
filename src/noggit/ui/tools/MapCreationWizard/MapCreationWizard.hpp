@@ -62,7 +62,7 @@ namespace Noggit::Ui::Tools::MapCreationWizard
 
       Widget::LocaleStringWidget* _map_name;
 
-      QSpinBox* _area_table_id;
+      QComboBox* _area_table_id;
 
       Widget::LocaleStringWidget* _map_desc_alliance;
       Widget::LocaleStringWidget* _map_desc_horde;

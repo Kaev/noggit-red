@@ -105,5 +105,4 @@ namespace Noggit::Ui::Tools::MapCreationWizard::Widget
     {
         return _widget_map.at(LocaleNames[locale])->text().toStdString();
     };
-
 }
