@@ -36,7 +36,7 @@
 
 #include "noggit/ui/FontNoggit.hpp"
 
-using namespace Noggit::Ui::Tools::MapCreationWizard::Ui;
+using namespace Noggit::Ui::Tools::MapCreationWizard;
 
 MapCreationWizard::MapCreationWizard(std::shared_ptr<Project::NoggitProject> project, QWidget* parent) : Noggit::Ui::widget(parent), _project(project)
 {

@@ -8,7 +8,7 @@
 #include <noggit/ui/minimap_widget.hpp>
 #include <noggit/ui/UidFixWindow.hpp>
 #include <noggit/uid_storage.hpp>
-#include <noggit/ui/tools/MapCreationWizard/Ui/MapCreationWizard.hpp>
+#include <noggit/ui/tools/MapCreationWizard/MapCreationWizard.hpp>
 #include <noggit/ui/FontAwesome.hpp>
 #include <noggit/ui/FramelessWindow.hpp>
 #include <noggit/ui/tools/UiCommon/StackedWidget.hpp>
@@ -379,10 +379,10 @@ namespace Noggit::Ui::Windows
     right_side->addTab(minimap_holder, "Enter map");
     minimap_holder->setAccessibleName("main_menu_minimap_holder");
 
-    _map_creation_wizard = new Noggit::Ui::Tools::MapCreationWizard::Ui::MapCreationWizard(_project, this);
+    _map_creation_wizard = new Noggit::Ui::Tools::MapCreationWizard::MapCreationWizard(_project, this);
 
     _map_wizard_connection = connect(_map_creation_wizard,
-                                     &Noggit::Ui::Tools::MapCreationWizard::Ui::MapCreationWizard::map_dbc_updated, [=]
+                                     &Noggit::Ui::Tools::MapCreationWizard::MapCreationWizard::map_dbc_updated, [=]
                                      {
                                        _buildMapListComponent->buildMapList(this);
                                      }

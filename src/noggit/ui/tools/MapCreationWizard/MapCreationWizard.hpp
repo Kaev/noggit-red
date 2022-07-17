@@ -24,7 +24,7 @@
 namespace Noggit
 {
 
-  namespace Ui::Tools::MapCreationWizard::Ui
+  namespace Ui::Tools::MapCreationWizard
   {
       enum class MapCreationFlags : uint8_t
       {

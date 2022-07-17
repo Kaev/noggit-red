@@ -5,7 +5,7 @@
 #include <noggit/World.h>
 #include <noggit/MapView.h>
 #include <noggit/ui/UidFixWindow.hpp>
-#include <noggit/ui/tools/MapCreationWizard/Ui/MapCreationWizard.hpp>
+#include <noggit/ui/tools/MapCreationWizard/MapCreationWizard.hpp>
 #include <noggit/application/Configuration/NoggitApplicationConfiguration.hpp>
 #include <noggit/ui/windows/noggitWindow/components/BuildMapListComponent.hpp>
 #include <noggit/project/ApplicationProject.h>
@@ -81,7 +81,7 @@ namespace Noggit::Ui::Windows
       MapView* _map_view;
       StackedWidget* _stack_widget;
 
-      Noggit::Ui::Tools::MapCreationWizard::Ui::MapCreationWizard* _map_creation_wizard;
+      Noggit::Ui::Tools::MapCreationWizard::MapCreationWizard* _map_creation_wizard;
       QMetaObject::Connection _map_wizard_connection;
 
       QListWidget* _continents_table;
