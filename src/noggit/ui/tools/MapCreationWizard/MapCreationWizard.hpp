@@ -21,11 +21,8 @@
 #include <noggit/World.h>
 #include <bitset>
 
-namespace Noggit
+namespace Noggit::Ui::Tools::MapCreationWizard
 {
-
-  namespace Ui::Tools::MapCreationWizard
-  {
       enum class MapCreationFlags : uint8_t
       {
           EDIT_NONE = 0,
@@ -155,4 +152,3 @@ namespace Noggit
 
     };
   }
-}
