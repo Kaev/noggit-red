@@ -33,6 +33,7 @@
 #include <QToolButton>
 #include <QSize>
 #include <QSizePolicy>
+#include <QTableWidget>
 
 #include "noggit/ui/FontNoggit.hpp"
 
@@ -290,18 +291,21 @@ namespace Noggit::Ui::Tools::MapCreationWizard
         layout_right->addWidget(_map_settings);
 
 
-        auto map_settings_layout = new QFormLayout(_map_settings);
+        auto map_settings_layout = new QGridLayout(_map_settings);
         _map_settings->setLayout(map_settings_layout);
 
         _directory = new QLineEdit(_map_settings);
-        map_settings_layout->addRow("Map directory:", _directory);
+        map_settings_layout->addWidget(new QLabel("Map directory:"), 0,0);
+        map_settings_layout->addWidget(_directory,0,1);
 
         _is_big_alpha = new QCheckBox(this);
-        map_settings_layout->addRow("Big alpha:", _is_big_alpha);
+        map_settings_layout->addWidget(new QLabel("Big alpha:"), 1, 0);
+        map_settings_layout->addWidget(_is_big_alpha, 1, 1);
         _is_big_alpha->setChecked(true);
 
         _sort_by_size_cat = new QCheckBox(this);
-        map_settings_layout->addRow("Sort models", _sort_by_size_cat);
+        map_settings_layout->addWidget(new QLabel("Sort models"), 2, 0);
+        map_settings_layout->addWidget(_sort_by_size_cat, 2, 1);
         _sort_by_size_cat->setChecked(true);
         _sort_by_size_cat->setToolTip("Sorts models based on their size on save. May help increase loading speed of the map.");
 
@@ -322,13 +326,17 @@ namespace Noggit::Ui::Tools::MapCreationWizard
         _instance_type->addItem("Arena");
         _instance_type->setItemData(4, QVariant(4));
 
-        map_settings_layout->addRow("Map type:", _instance_type);
+        map_settings_layout->addWidget(new QLabel("Map type:"), 3, 0);
+        map_settings_layout->addWidget(_instance_type, 3, 1);
 
         _map_name = new Widget::LocaleStringWidget(_map_settings);
-        map_settings_layout->addRow("Map name:", _map_name);
+        map_settings_layout->addWidget(new QLabel("Map name:"), 4, 0);
+        map_settings_layout->addWidget(_map_name, 4, 1);
 
         _area_table_id = new QComboBox(_map_settings);
-        map_settings_layout->addRow("Area ID:", _area_table_id);
+        map_settings_layout->addWidget(new QLabel("Area ID:"), 5, 0);
+        map_settings_layout->addWidget(_area_table_id, 5, 1);
+
         int counta = 1;
         auto areas = project->ClientDatabase->AreaTableRepository->GetAllAreas();
         _area_table_id->addItem(QString::fromStdString("Continent Fallback"));
@@ -342,10 +350,12 @@ namespace Noggit::Ui::Tools::MapCreationWizard
         }
       
         _map_desc_alliance = new Widget::LocaleStringWidget(_map_settings);
-        map_settings_layout->addRow("Description (Alliance):", _map_desc_alliance);
+        map_settings_layout->addWidget(new QLabel("Description (Alliance):"), 6, 0);
+        map_settings_layout->addWidget(_map_desc_alliance, 6, 1);
 
         _map_desc_horde = new Widget::LocaleStringWidget(_map_settings);
-        map_settings_layout->addRow("Description (Horde):", _map_desc_horde);
+        map_settings_layout->addWidget(new QLabel("Description (Horde):"), 7, 0);
+        map_settings_layout->addWidget(_map_desc_horde, 7, 1);
 
         _loading_screen = new QComboBox(_map_settings);
         auto loadingScreens = project->ClientDatabase->LoadingScreenRepository->GetLoadingScreens();
@@ -356,22 +366,28 @@ namespace Noggit::Ui::Tools::MapCreationWizard
             _loading_screen->setItemData(countl, QVariant(loadingscreen.Id));
             countl++;
         }
-        map_settings_layout->addRow("Loading screen:", _loading_screen);
 
+    	map_settings_layout->addWidget(new QLabel("Loading screen:"), 8, 0);
+		map_settings_layout->addWidget(_loading_screen, 8, 1);
 
         _minimap_icon_scale = new QDoubleSpinBox(_map_settings);
-        map_settings_layout->addRow("Minimap icon scale:", _minimap_icon_scale);
+        map_settings_layout->addWidget(new QLabel("Minimap icon scale:"), 9, 0);
+        map_settings_layout->addWidget(_minimap_icon_scale, 9, 1);
 
         _corpse_map_id->setCurrentText("None");
-        map_settings_layout->addRow("Corpse map:", _corpse_map_id);
+        map_settings_layout->addWidget(new QLabel("Corpse map:"), 10, 0);
+        map_settings_layout->addWidget(_corpse_map_id, 10, 1);
+
 
         _corpse_x = new QDoubleSpinBox(_map_settings);
-        map_settings_layout->addRow("Corpse X:", _corpse_x);
+        map_settings_layout->addWidget(new QLabel("Corpse X:"), 11, 0);
+        map_settings_layout->addWidget(_corpse_x, 11, 1);
         _corpse_x->setMinimum(-17066.66656); // map size
         _corpse_x->setMaximum(17066.66656);
 
         _corpse_y = new QDoubleSpinBox(_map_settings);
-        map_settings_layout->addRow("Corpse Y:", _corpse_y);
+        map_settings_layout->addWidget(new QLabel("Corpse Y:"), 12, 0);
+        map_settings_layout->addWidget(_corpse_y, 12, 1);
         _corpse_y->setMinimum(-17066.66656); // map size
         _corpse_y->setMaximum(17066.66656);
 
@@ -380,7 +396,8 @@ namespace Noggit::Ui::Tools::MapCreationWizard
         _time_of_day_override->setMaximum(2880); // Time Values from 0 to 2880 where each number represents a half minute from midnight to midnight 
         _time_of_day_override->setValue(-1);
 
-        map_settings_layout->addRow("Daytime override:", _time_of_day_override);
+        map_settings_layout->addWidget(new QLabel("Daytime override:"), 13, 0);
+        map_settings_layout->addWidget(_time_of_day_override, 13, 1);
 
         _expansion_id = new QComboBox(_map_settings);
 
@@ -392,16 +409,18 @@ namespace Noggit::Ui::Tools::MapCreationWizard
 
         _expansion_id->addItem("Wrath of the Lich King");
         _expansion_id->setItemData(2, QVariant(2));
-
-        map_settings_layout->addRow("Expansion:", _expansion_id);
+        map_settings_layout->addWidget(new QLabel("Expansion:"), 14, 0);
+        map_settings_layout->addWidget(_expansion_id, 14, 1);
 
         _raid_offset = new QSpinBox(_map_settings);
         _raid_offset->setMaximum(std::numeric_limits<std::int32_t>::max());
-        map_settings_layout->addRow("Raid offset:", _raid_offset);
+        map_settings_layout->addWidget(new QLabel("Raid offset:"), 15, 0);
+        map_settings_layout->addWidget(_raid_offset, 15, 1);
 
         _max_players = new QSpinBox(_map_settings);
         _max_players->setMaximum(std::numeric_limits<std::int32_t>::max());
-        map_settings_layout->addRow("Max players:", _max_players);
+        map_settings_layout->addWidget(new QLabel("Max players:"), 16, 0);
+        map_settings_layout->addWidget(_max_players, 16, 1);
 
         // Bottom row
         auto bottom_row_wgt = new QWidget(layout_right_holder);
