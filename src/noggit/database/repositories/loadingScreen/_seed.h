@@ -15,7 +15,8 @@ namespace Noggit::Database::Repositories
 
 	class ILoadingScreenRepository
 	{
-
+		virtual std::vector<LoadingScreenEntry> GetLoadingScreens() = 0;
+		virtual LoadingScreenEntry GetLoadingScreen(int id) = 0;
 	};
 
 	class WotlkLoadingScreenRepository : public ILoadingScreenRepository
@@ -27,7 +28,7 @@ namespace Noggit::Database::Repositories
 
 		}
 
-		std::vector<LoadingScreenEntry> GetLoadingScreens()
+		std::vector<LoadingScreenEntry> GetLoadingScreens() override
 		{
 			SQLite::Database   db(_databasePath.generic_string());
 			SQLite::Statement  query(db, "SELECT ID, Name, FileName, HasWideScreen FROM LoadingScreens;");
@@ -45,6 +46,26 @@ namespace Noggit::Database::Repositories
 			}
 
 			return loadingScreens;
+		}
+
+
+		LoadingScreenEntry GetLoadingScreen(int id) override
+		{
+			SQLite::Database   db(_databasePath.generic_string());
+			SQLite::Statement  query(db, "SELECT ID, Name, FileName, HasWideScreen FROM LoadingScreens WHERE ID = :id;");
+
+			query.bind(1, id);
+
+			if (query.executeStep())
+			{
+				auto loadingScreen = LoadingScreenEntry();
+				loadingScreen.Id = query.getColumn(0).getInt();
+				loadingScreen.Name = query.getColumn(1).getString();
+				loadingScreen.FileName = query.getColumn(2).getString();
+				loadingScreen.HasWideScreen = static_cast<bool>(query.getColumn(3).getInt());
+
+				return loadingScreen;
+			}
 		}
 	};
 
