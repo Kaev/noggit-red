@@ -1,11 +1,9 @@
 // This file is part of Noggit3, licensed under GNU General Public License (version 3).
 
 #pragma once
-
 #include <unordered_map>
 #include <vector>
 #include <memory>
-
 #include <QWidget>
 #include <QLineEdit>
 #include <QComboBox>
@@ -15,11 +13,11 @@
 #include <QDoubleSpinBox>
 #include <QHBoxLayout>
 #include <QStackedWidget>
-
 #include <noggit/ui/minimap_widget.hpp>
 #include <noggit/ui/widget.hpp>
 #include <noggit/World.h>
 #include <bitset>
+#include <noggit/ui/tools/MapCreationWizard/widgets/LocaleStringWidget.hpp>
 
 namespace Noggit::Ui::Tools::MapCreationWizard
 {
@@ -32,52 +30,6 @@ namespace Noggit::Ui::Tools::MapCreationWizard
           EDIT_SELECTION = 8,
       	  EDIT_MOVE = 16
       };
-
-    class LocaleDBCEntry : public QWidget
-    {
-      public:
-        LocaleDBCEntry(QWidget *parent = nullptr);
-
-        void setCurrentLocale(const std::string& locale);
-
-        void setValue(const std::string& val, int locale)
-        {
-          _widget_map.at(_locale_names[locale])->setText(QString::fromStdString(val));
-        }
-
-        std::string getValue(int locale) { return  _widget_map.at(_locale_names[locale])->text().toStdString(); };
-
-        void fill(Noggit::LocaleString& record);
-        void clear();
-        void toRecord(Noggit::LocaleString& record);
-
-      private:
-        QComboBox* _current_locale;
-        QStackedWidget* _show_entry;
-
-        std::unordered_map<std::string, QLineEdit*> _widget_map;
-        std::vector<std::string> _locale_names = {"enUS", "koKR", "frFR", "deDE", "zhCN",
-                                                  "zhTW", "esES", "esMX", "ruRU", "jaJP", "ptPT", "itIT",
-                                                  "Unknown 1", "Unknown 2", "Unknown 3", "Unknown 4"};
-
-        QLineEdit* _en;
-        QLineEdit* _kr;
-        QLineEdit* _fr;
-        QLineEdit* _de;
-        QLineEdit* _cn; // + nCN
-        QLineEdit* _tw;
-        QLineEdit* _es;
-        QLineEdit* _mx;
-        QLineEdit* _ru;
-        QLineEdit* _jp;
-        QLineEdit* _pt;
-        QLineEdit* _it;
-        QLineEdit* _unk1;
-        QLineEdit* _unk2;
-        QLineEdit* _unk3;
-        QLineEdit* _unk4;
-        QSpinBox* _flags;
-    };
 
   class MapCreationWizard : public Noggit::Ui::widget
     {
@@ -94,7 +46,7 @@ namespace Noggit::Ui::Tools::MapCreationWizard
       void map_dbc_updated();
 
     private:
-        std::shared_ptr<Project::NoggitProject> _project;
+  	  std::shared_ptr<Project::NoggitProject> _project;
       Noggit::Ui::minimap_widget* _minimap_widget;
       int _selected_map;
       QGroupBox* _map_editor_buttons;
@@ -108,12 +60,12 @@ namespace Noggit::Ui::Tools::MapCreationWizard
 
       QComboBox* _instance_type;
 
-      LocaleDBCEntry* _map_name;
+      Widget::LocaleStringWidget* _map_name;
 
       QSpinBox* _area_table_id;
 
-      LocaleDBCEntry* _map_desc_alliance;
-      LocaleDBCEntry* _map_desc_horde;
+      Widget::LocaleStringWidget* _map_desc_alliance;
+      Widget::LocaleStringWidget* _map_desc_horde;
 
       QComboBox* _loading_screen;
       QDoubleSpinBox* _minimap_icon_scale;

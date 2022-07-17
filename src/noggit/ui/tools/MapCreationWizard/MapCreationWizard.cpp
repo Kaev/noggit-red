@@ -324,17 +324,17 @@ namespace Noggit::Ui::Tools::MapCreationWizard
 
         map_settings_layout->addRow("Map type:", _instance_type);
 
-        _map_name = new LocaleDBCEntry(_map_settings);
+        _map_name = new Widget::LocaleStringWidget(_map_settings);
         map_settings_layout->addRow("Map name:", _map_name);
 
         _area_table_id = new QSpinBox(_map_settings);
         map_settings_layout->addRow("Area ID:", _area_table_id);
         _area_table_id->setMaximum(std::numeric_limits<std::int32_t>::max());
 
-        _map_desc_alliance = new LocaleDBCEntry(_map_settings);
+        _map_desc_alliance = new Widget::LocaleStringWidget(_map_settings);
         map_settings_layout->addRow("Description (Alliance):", _map_desc_alliance);
 
-        _map_desc_horde = new LocaleDBCEntry(_map_settings);
+        _map_desc_horde = new Widget::LocaleStringWidget(_map_settings);
         map_settings_layout->addRow("Description (Horde):", _map_desc_horde);
 
         _loading_screen = new QComboBox(_map_settings);
@@ -847,129 +847,6 @@ namespace Noggit::Ui::Tools::MapCreationWizard
         emit map_dbc_updated();
 
         addNewMap();
-    }
-
-
-    LocaleDBCEntry::LocaleDBCEntry(QWidget* parent) : QWidget(parent)
-    {
-        auto layout = new QHBoxLayout(this);
-        layout->setContentsMargins(0, 0, 0, 0);
-        _show_entry = new QStackedWidget(this);
-
-        _en = new QLineEdit(this);
-        _kr = new QLineEdit(this);
-        _fr = new QLineEdit(this);
-        _de = new QLineEdit(this);
-        _cn = new QLineEdit(this);
-        _tw = new QLineEdit(this);
-        _es = new QLineEdit(this);
-        _mx = new QLineEdit(this);
-        _ru = new QLineEdit(this);
-        _jp = new QLineEdit(this);
-        _pt = new QLineEdit(this);
-        _it = new QLineEdit(this);
-
-        _unk1 = new QLineEdit(this);
-        _unk2 = new QLineEdit(this);
-        _unk3 = new QLineEdit(this);
-        _unk4 = new QLineEdit(this);
-
-        _flags = new QSpinBox(this);
-        _flags->setVisible(false);
-
-        _show_entry->addWidget(_en);
-        _show_entry->addWidget(_kr);
-        _show_entry->addWidget(_fr);
-        _show_entry->addWidget(_de);
-        _show_entry->addWidget(_cn);
-        _show_entry->addWidget(_tw);
-        _show_entry->addWidget(_es);
-        _show_entry->addWidget(_mx);
-        _show_entry->addWidget(_ru);
-        _show_entry->addWidget(_jp);
-        _show_entry->addWidget(_pt);
-        _show_entry->addWidget(_it);
-        _show_entry->addWidget(_unk1);
-        _show_entry->addWidget(_unk2);
-        _show_entry->addWidget(_unk3);
-        _show_entry->addWidget(_unk4);
-
-        layout->addWidget(_show_entry);
-
-        _current_locale = new QComboBox(this);
-
-        for (auto const& loc : _locale_names)
-        {
-            _current_locale->addItem(QString::fromStdString(loc));
-        }
-
-        _widget_map = {
-
-            {"enUS", _en},
-            {"koKR", _kr},
-            {"frFR", _fr},
-            {"deDE", _de},
-            {"zhCN", _cn},
-            {"zhTW", _tw},
-            {"esES", _es},
-            {"esMX", _mx},
-            {"ruRU", _ru},
-            {"jaJP", _jp},
-            {"ptPT", _pt},
-            {"itIT", _it},
-            {"Unknown 1", _unk1},
-            {"Unknown 2", _unk2},
-            {"Unknown 3", _unk3},
-            {"Unknown 4", _unk4}
-        };
-
-        layout->addWidget(_current_locale);
-        // Connect
-
-        connect(_current_locale, &QComboBox::currentTextChanged
-            , [&](QString s)
-            {
-                setCurrentLocale(_current_locale->currentText().toStdString());
-            }
-        );
-
-        setMaximumHeight(_en->height());
-    }
-
-    void LocaleDBCEntry::setCurrentLocale(const std::string& locale)
-    {
-        _show_entry->setCurrentWidget(_widget_map.at(locale));
-    }
-
-    void LocaleDBCEntry::fill(Noggit::LocaleString& record)
-    {
-        for (int loc = 0; loc < 16; ++loc)
-        {
-            auto locale = LocaleNames[loc];
-            setValue(record[locale], loc);
-        }
-
-        _flags->setValue(record.flags);
-    }
-
-    void LocaleDBCEntry::toRecord(Noggit::LocaleString& record)
-    {
-        for (int loc = 0; loc < 16; ++loc)
-        {
-            auto locale = LocaleNames[loc];
-            record.SetString(locale, getValue(loc));
-        }
-        record.flags = _flags->value();
-    }
-
-    void LocaleDBCEntry::clear()
-    {
-        for (int loc = 0; loc < 16; ++loc)
-        {
-            setValue("", loc);
-        }
-
-        _flags->setValue(0);
     }
 
 }
