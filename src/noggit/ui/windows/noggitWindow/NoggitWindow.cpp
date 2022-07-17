@@ -284,12 +284,12 @@ namespace Noggit::Ui::Windows
         _combo_exp_search->addItem(QIcon(":/icon-classic"), tr("Classic"));
         _combo_exp_search->addItem(QIcon(":/icon-burning"), tr("Burning Cursade"));
         _combo_exp_search->addItem(QIcon(":/icon-wrath"), tr("Wrath of the Lich King"));
-        _combo_exp_search->addItem(QIcon(":/icon-cata"), tr("Cataclism"));
-        _combo_exp_search->addItem(QIcon(":/icon-panda"), tr("Mist of Pandaria"));
-        _combo_exp_search->addItem(QIcon(":/icon-warlords"), tr("Warlords of Draenor"));
-        _combo_exp_search->addItem(QIcon(":/icon-legion"), tr("Legion"));
-        _combo_exp_search->addItem(QIcon(":/icon-battle"), tr("Battle for Azeroth"));
-        _combo_exp_search->addItem(QIcon(":/icon-shadow"), tr("Shadowlands"));
+        //_combo_exp_search->addItem(QIcon(":/icon-cata"), tr("Cataclism"));
+        //_combo_exp_search->addItem(QIcon(":/icon-panda"), tr("Mist of Pandaria"));
+        //_combo_exp_search->addItem(QIcon(":/icon-warlords"), tr("Warlords of Draenor"));
+        //_combo_exp_search->addItem(QIcon(":/icon-legion"), tr("Legion"));
+        //_combo_exp_search->addItem(QIcon(":/icon-battle"), tr("Battle for Azeroth"));
+        //_combo_exp_search->addItem(QIcon(":/icon-shadow"), tr("Shadowlands"));
         _combo_exp_search->setCurrentIndex(0);
 
         QObject::connect(_line_edit_search, QOverload<const QString&>::of(&QLineEdit::textChanged), [this, _combo_search, _combo_exp_search](const QString &name)
