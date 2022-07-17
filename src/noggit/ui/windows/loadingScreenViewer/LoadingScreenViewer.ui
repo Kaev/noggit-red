@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+  <class>LoadingScreenViewer</class>
+  <widget class="QMainWindow" name="MainWindow">
+    <property name="geometry">
+      <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>400</width>
+        <height>400</height>
+      </rect>
+    </property>
+    <property name="windowTitle">
+      <string>Loading Screen View</string>
+    </property>
+    <property name="windowIcon">
+      <iconset>
+        <normalon>:/icon</normalon>
+      </iconset>
+    </property>
+    <widget class="QWidget" name="centralwidget">
+      <widget class="QLabel" name="label">
+        <property name="geometry">
+          <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>25</width>
+            <height>25</height>
+          </rect>
+        </property>
+        <property name="text">
+          <string>TextLabel</string>
+        </property>
+      </widget>
+    </widget>
+  </widget>
+  <resources/>
+  <connections/>
+</ui>
