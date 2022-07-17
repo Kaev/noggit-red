@@ -56,7 +56,8 @@ namespace Noggit::Ui::Tools::MapCreationWizard::Widget
             }
         );
 
-        setMaximumHeight(_widget_map[0]->height());
+        setCurrentLocale(Locale::enUS);
+        setMaximumHeight(_widget_map[Locale::enUS] ->height());
     }
 
     void LocaleStringWidget::setCurrentLocale(const std::string& locale)
@@ -102,7 +103,7 @@ namespace Noggit::Ui::Tools::MapCreationWizard::Widget
 
     std::string LocaleStringWidget::getValue(int locale) const
     {
-        return  _widget_map.at(LocaleNames[locale])->text().toStdString();
+        return _widget_map.at(LocaleNames[locale])->text().toStdString();
     };
 
 }
