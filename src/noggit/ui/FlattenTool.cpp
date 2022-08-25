@@ -70,22 +70,6 @@ namespace Noggit
 
       layout->addWidget(settings_group);
 
-      QGroupBox* flatten_blur_group = new QGroupBox("Flatten/Blur", this);
-      flatten_blur_group->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-      auto flatten_blur_layout = new QGridLayout(flatten_blur_group);
-
-      flatten_blur_layout->addWidget(_lock_up_checkbox = new QCheckBox(this), 0, 0);
-      flatten_blur_layout->addWidget(_lock_down_checkbox = new QCheckBox(this), 0, 1);
-
-      _lock_up_checkbox->setChecked(_flatten_mode.raise);
-      _lock_up_checkbox->setText("Raise");
-      _lock_up_checkbox->setToolTip("Raise the terrain when using the tool");
-      _lock_down_checkbox->setChecked(_flatten_mode.lower);
-      _lock_down_checkbox->setText("Lower");
-      _lock_down_checkbox->setToolTip("Lower the terrain when using the tool");
-
-      layout->addWidget(flatten_blur_group);
-
       QGroupBox* flatten_only_group = new QGroupBox("Flatten only", this);
       auto flatten_only_layout = new QVBoxLayout(flatten_only_group);
 
@@ -109,6 +93,16 @@ namespace Noggit
       _angle_slider->setToolTip("Angle");
       _angle_slider->setMinimumHeight(80);
       angle_layout->addWidget(_angle_slider, 0, 1);
+
+      _angle_info = new QLabel(this);
+      _angle_info->setText(QString::number(_angle_slider->value()));
+      angle_layout->addWidget(new QLabel(tr("Angle : ")), 1, 0);
+      angle_layout->addWidget(_angle_info, 1, 1);
+
+      _orientation_info = new QLabel(this);
+      _orientation_info->setText(QString::number(_orientation_dial->value()));
+      angle_layout->addWidget(new QLabel(tr("Orientation : ")), 2, 0);
+      angle_layout->addWidget(_orientation_info, 2, 1);
       
       flatten_only_layout->addWidget(_angle_group);
 
@@ -140,24 +134,11 @@ namespace Noggit
                 }
               );
 
-      connect( _lock_up_checkbox, &QCheckBox::stateChanged
-               , [&] (int state)
-                 {
-                   _flatten_mode.raise = state;
-                 }
-             );
-
-      connect( _lock_down_checkbox, &QCheckBox::stateChanged
-               , [&] (int state)
-                 {
-                   _flatten_mode.lower = state;
-                 }
-             );
-
       connect ( _angle_slider, &QSlider::valueChanged
                 , [&] (int v)
                   {
                     _angle = v;
+                    _angle_info->setText(QString::number(_angle));
                   }
                 );
 
@@ -165,6 +146,7 @@ namespace Noggit
                 , [this] (int v)
                   {
                     setOrientation(v + 90.0f);
+                    _orientation_info->setText(QString::number(v));
                   }
                 );
 
@@ -217,16 +199,6 @@ namespace Noggit
     {
       _flatten_type = ( ++_flatten_type ) % eFlattenType_Count;
       _type_button_box->button (_flatten_type)->toggle();
-    }
-
-    void flatten_blur_tool::nextFlattenMode()
-    {
-      _flatten_mode.next();
-
-      QSignalBlocker const up_lock(_lock_up_checkbox);
-      QSignalBlocker const down_lock(_lock_down_checkbox);
-      _lock_up_checkbox->setChecked(_flatten_mode.raise);
-      _lock_down_checkbox->setChecked(_flatten_mode.lower);
     }
 
     void flatten_blur_tool::toggleFlattenAngle()
@@ -286,6 +258,7 @@ namespace Noggit
         _orientation += 360.0f;
       }
       _orientation_dial->setSliderPosition(_orientation - 90.0f);
+      _orientation_info->setText(QString::number(_orientation_dial->value()));
     }
 
     void flatten_blur_tool::changeAngle(float change)
