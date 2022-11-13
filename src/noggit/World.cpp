@@ -3019,33 +3019,23 @@ void World::select_objects_in_area(
                     screenPos.x *= viewportWidth;
                     screenPos.y *= viewportHeight;
 
-                    LogError << std::fixed << std::setprecision(5) << "x: " << instance->pos.x << " z: " << instance->pos.z << " y: " << instance->pos.y << std::endl;
-                    LogError << std::fixed << std::setprecision(5) << "screen pos x: " << screenPos.x << " z: " << screenPos.z << " y: " << screenPos.y << std::endl;
-                    
                     if (screenPos.x >= selectionBox[0].x
                         && screenPos.x <= selectionBox[1].x
                         && screenPos.y >= selectionBox[0].y
                         && screenPos.y <= selectionBox[1].y)
                     {
-                        LogError << "Collision" << std::endl;
-                        //Collision detected!
-                    }
+                        auto uid = instance->uid;
+                        auto modelInstance = _model_instance_storage.get_instance(uid);
+                        if (modelInstance && modelInstance.value().index() == eEntry_Object) {
+                            auto obj = std::get<selected_object_type>(modelInstance.value());
+                            auto model_instance = static_cast<ModelInstance*>(obj);
 
-                    // if is in selection do stuff below
-
-                    /*auto uid = instance->uid;
-                    auto modelInstance = _model_instance_storage.get_instance(uid);
-                    if (modelInstance && modelInstance.value().index() == eEntry_Object) {
-                        auto obj = std::get<selected_object_type>(modelInstance.value());
-                        auto model_instance = static_cast<ModelInstance*>(obj);
-
-                        
-
-                        if (!is_selected(obj))
-                        {
-                            this->add_to_selection(obj);
+                            if (!is_selected(obj) && !model_instance->model->is_hidden())
+                            {
+                                this->add_to_selection(obj);
+                            }
                         }
-                    }*/
+                    }
                 }
             }
         }
