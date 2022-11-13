@@ -451,7 +451,7 @@ private:
 
   OpenGL::Scoped::deferred_upload_buffers<2> _buffers;
 
-  QRubberBand* _areaSelection;
+  QRubberBand* _area_selection;
 
 public:
 

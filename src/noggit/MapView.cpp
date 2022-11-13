@@ -818,7 +818,7 @@ void MapView::setupObjectEditorUi()
   /* Additional tools */
 
   /* Area selection */
-  _areaSelection = new QRubberBand(QRubberBand::Rectangle, this);
+  _area_selection = new QRubberBand(QRubberBand::Rectangle, this);
 
   /* Object Palette */
   _object_palette = new Noggit::Ui::ObjectPalette(this, this);
@@ -4910,7 +4910,7 @@ void MapView::mouseMoveEvent (QMouseEvent* event)
 
   if (leftMouse && terrainMode == editing_mode::object && _display_mode == display_mode::in_3D)
   {
-      _areaSelection->setGeometry(QRect(_drag_start_window, event->pos()).normalized());
+      _area_selection->setGeometry(QRect(_drag_start_window, event->pos()).normalized());
   }
 
   if (_display_mode == display_mode::in_2D && leftMouse && _mod_alt_down && _mod_shift_down)
@@ -4985,8 +4985,8 @@ void MapView::mousePressEvent(QMouseEvent* event)
   {
       _drag_start_world = _cursor_pos;
       _drag_start_window = event->pos();
-      _areaSelection->setGeometry(QRect(_drag_start_window, QSize()));
-      _areaSelection->show();
+      _area_selection->setGeometry(QRect(_drag_start_window, QSize()));
+      _area_selection->show();
   }
 
   if (rightMouse)
@@ -5089,7 +5089,7 @@ void MapView::mouseReleaseEvent (QMouseEvent* event)
             doSelection(false);
         }
         
-        _areaSelection->hide();
+        _area_selection->hide();
     }
     else 
     {
