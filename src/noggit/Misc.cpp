@@ -140,6 +140,16 @@ namespace misc
       && r2[0].z <= r1[1].z;
   }
 
+  bool boxOverlap(glm::vec3 const* box1, glm::vec3 const* box2)
+  {
+      return box1[0].x <= box2[1].x &&
+          box1[1].x >= box2[0].x &&
+          box1[0].y <= box2[1].y &&
+          box1[1].y >= box2[0].y &&
+          box1[0].z <= box2[1].z &&
+          box1[1].z >= box2[0].z;
+  }
+
   float angledHeight(glm::vec3 const& origin, glm::vec3 const& pos, math::radians const& angle, math::radians const& orientation)
   {
     return ( origin.y

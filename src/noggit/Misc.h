@@ -37,6 +37,7 @@ namespace misc
   float getShortestDist(glm::vec3 const& pos, glm::vec3 const& square_pos, float unitSize);
   bool square_is_in_circle(float x, float z, float radius, float square_x, float square_z, float square_size);
   bool rectOverlap(glm::vec3 const*, glm::vec3 const*);
+  bool boxOverlap(glm::vec3 const*, glm::vec3 const*);
   // used for angled tools, get the height a point (pos) should be given an origin, angle and orientation
   float angledHeight(glm::vec3 const& origin, glm::vec3 const& pos, math::radians const& angle, math::radians const& orientation);
   void extract_v3d_min_max(glm::vec3 const& point, glm::vec3& min, glm::vec3& max);

@@ -356,6 +356,8 @@ public:
   unsigned getNumLoadedTiles() const { return _n_loaded_tiles; };
   unsigned getNumRenderedTiles() const { return _n_rendered_tiles; };
 
+  void select_objects_in_area(glm::vec3 start, glm::vec3 end, bool reset_selection);
+
 protected:
   void update_models_by_filename();
 

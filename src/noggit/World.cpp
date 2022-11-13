@@ -2976,3 +2976,51 @@ void World::notifyTileRendererOnSelectedTextureChange()
   }
 }
 
+void World::select_objects_in_area(glm::vec3 start, glm::vec3 end, bool reset_selection)
+{
+    ZoneScoped;
+
+    if (reset_selection)
+    {
+        this->reset_selection();
+    }
+
+    const std::array<glm::vec3, 2> areaBox
+    {
+        glm::vec3(std::min(start.x, end.x), std::min(start.y, end.y), std::min(start.z, end.z)),
+        glm::vec3(std::max(start.x, end.x), std::max(start.y, end.y), std::max(start.z, end.z))
+    };
+
+    for (auto& map_object : _loaded_tiles_buffer)
+    {
+        MapTile* tile = map_object.second;
+
+        if (!tile)
+        {
+            break;
+        }
+
+        for (auto& pair : tile->getObjectInstances())
+        {
+            if (pair.second[0]->which() == eMODEL)
+            {
+                for (auto& instance : pair.second)
+                {
+                    if (instance->isInsideBox(&areaBox))
+                    {
+                        auto uid = instance->uid;
+                        auto modelInstance = _model_instance_storage.get_instance(uid);
+                        if (modelInstance && modelInstance.value().index() == eEntry_Object) {
+                            auto obj = std::get<selected_object_type>(modelInstance.value());
+
+                            if (!is_selected(obj))
+                            {
+                                this->add_to_selection(obj);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -817,6 +817,9 @@ void MapView::setupObjectEditorUi()
 
   /* Additional tools */
 
+  /* Area selection */
+  _areaSelection = new QRubberBand(QRubberBand::Rectangle, this);
+
   /* Object Palette */
   _object_palette = new Noggit::Ui::ObjectPalette(this, this);
   _object_palette->hide();
@@ -4905,6 +4908,11 @@ void MapView::mouseMoveEvent (QMouseEvent* event)
 
   }
 
+  if (leftMouse && terrainMode == editing_mode::object && _display_mode == display_mode::in_3D)
+  {
+      _areaSelection->setGeometry(QRect(_drag_start_window, event->pos()).normalized());
+  }
+
   if (_display_mode == display_mode::in_2D && leftMouse && _mod_alt_down && _mod_shift_down)
   {
     strafing = ((relative_movement.dx() / XSENS) / -1) * 5.0f;
@@ -4973,18 +4981,15 @@ void MapView::mousePressEvent(QMouseEvent* event)
     break;
   }
 
-  if (leftMouse)
+  if (leftMouse && ((terrainMode == editing_mode::object || terrainMode == editing_mode::minimap) && !_mod_ctrl_down))
   {
-    if ((terrainMode == editing_mode::object || terrainMode == editing_mode::minimap)  && !_mod_ctrl_down)
-    {
-      doSelection(false);
-    }
-    else
-    {
-      doSelection(true);
-    }
+      _drag_start_world = _cursor_pos;
+      _drag_start_window = event->pos();
+      _areaSelection->setGeometry(QRect(_drag_start_window, QSize()));
+      _areaSelection->show();
   }
-  else if (rightMouse)
+
+  if (rightMouse)
   {
     look = true;
   }
@@ -5070,6 +5075,27 @@ void MapView::mouseReleaseEvent (QMouseEvent* event)
       strafing = 0;
       moving = 0;
     }
+
+    if ((terrainMode == editing_mode::object || terrainMode == editing_mode::minimap) && !_mod_ctrl_down)
+    {
+        auto drag_end_world = _cursor_pos;
+
+        if (_drag_start_world != drag_end_world)
+        {
+            _world->select_objects_in_area(_drag_start_world, drag_end_world, !_mod_shift_down);
+        }
+        else
+        {
+            doSelection(false);
+        }
+        
+        _areaSelection->hide();
+    }
+    else 
+    {
+        doSelection(true);
+    }
+
     break;
 
   case Qt::RightButton:

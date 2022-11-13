@@ -33,6 +33,8 @@ public:
 
   [[nodiscard]]
   bool isInsideRect(std::array<glm::vec3, 2> const* rect) const;
+  [[nodiscard]]
+  bool isInsideBox(std::array<glm::vec3, 2> const* rect) const;
 
   [[nodiscard]]
   bool isDuplicateOf(SceneObject const& other);
