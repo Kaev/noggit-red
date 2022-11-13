@@ -5082,7 +5082,17 @@ void MapView::mouseReleaseEvent (QMouseEvent* event)
 
         if (_drag_start_world != drag_end_world)
         {
-            _world->select_objects_in_area(_drag_start_world, drag_end_world, !_mod_shift_down);
+            auto start = _drag_start_window;
+            auto end = event->pos();
+
+            const std::array<glm::vec2, 2> selectionBox
+            {
+                glm::vec2(std::min(start.x(), end.x()), std::min(start.y(), end.y())),
+                glm::vec2(std::max(start.x(), end.x()), std::max(start.y(), end.y()))
+            };
+
+            _world->select_objects_in_area(selectionBox, !_mod_shift_down, model_view(), projection(), width(), height());
+
         }
         else
         {

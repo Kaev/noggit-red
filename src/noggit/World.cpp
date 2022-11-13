@@ -2976,7 +2976,13 @@ void World::notifyTileRendererOnSelectedTextureChange()
   }
 }
 
-void World::select_objects_in_area(glm::vec3 start, glm::vec3 end, bool reset_selection)
+void World::select_objects_in_area(
+    const std::array<glm::vec2, 2> selectionBox, 
+    bool reset_selection,
+    glm::mat4x4 view,
+    glm::mat4x4 projection,
+    int viewportWidth, 
+    int viewportHeight)
 {
     ZoneScoped;
 
@@ -2984,12 +2990,6 @@ void World::select_objects_in_area(glm::vec3 start, glm::vec3 end, bool reset_se
     {
         this->reset_selection();
     }
-
-    const std::array<glm::vec3, 2> areaBox
-    {
-        glm::vec3(std::min(start.x, end.x), std::min(start.y, end.y), std::min(start.z, end.z)),
-        glm::vec3(std::max(start.x, end.x), std::max(start.y, end.y), std::max(start.z, end.z))
-    };
 
     for (auto& map_object : _loaded_tiles_buffer)
     {
@@ -3006,19 +3006,46 @@ void World::select_objects_in_area(glm::vec3 start, glm::vec3 end, bool reset_se
             {
                 for (auto& instance : pair.second)
                 {
-                    if (instance->isInsideBox(&areaBox))
-                    {
-                        auto uid = instance->uid;
-                        auto modelInstance = _model_instance_storage.get_instance(uid);
-                        if (modelInstance && modelInstance.value().index() == eEntry_Object) {
-                            auto obj = std::get<selected_object_type>(modelInstance.value());
+                    auto model = instance->transformMatrix();
+                    glm::mat4 VPmatrix = projection * view;
+                    glm::vec4 screenPos = VPmatrix * glm::vec4(instance->pos, 1.0f);
+                    screenPos.x /= screenPos.w;
+                    screenPos.y /= screenPos.w;
 
-                            if (!is_selected(obj))
-                            {
-                                this->add_to_selection(obj);
-                            }
-                        }
+                    screenPos.x = (screenPos.x + 1.0f) / 2.0f;
+                    screenPos.y = (screenPos.y + 1.0f) / 2.0f;
+                    screenPos.y = 1 - screenPos.y;
+
+                    screenPos.x *= viewportWidth;
+                    screenPos.y *= viewportHeight;
+
+                    LogError << std::fixed << std::setprecision(5) << "x: " << instance->pos.x << " z: " << instance->pos.z << " y: " << instance->pos.y << std::endl;
+                    LogError << std::fixed << std::setprecision(5) << "screen pos x: " << screenPos.x << " z: " << screenPos.z << " y: " << screenPos.y << std::endl;
+                    
+                    if (screenPos.x >= selectionBox[0].x
+                        && screenPos.x <= selectionBox[1].x
+                        && screenPos.y >= selectionBox[0].y
+                        && screenPos.y <= selectionBox[1].y)
+                    {
+                        LogError << "Collision" << std::endl;
+                        //Collision detected!
                     }
+
+                    // if is in selection do stuff below
+
+                    /*auto uid = instance->uid;
+                    auto modelInstance = _model_instance_storage.get_instance(uid);
+                    if (modelInstance && modelInstance.value().index() == eEntry_Object) {
+                        auto obj = std::get<selected_object_type>(modelInstance.value());
+                        auto model_instance = static_cast<ModelInstance*>(obj);
+
+                        
+
+                        if (!is_selected(obj))
+                        {
+                            this->add_to_selection(obj);
+                        }
+                    }*/
                 }
             }
         }
