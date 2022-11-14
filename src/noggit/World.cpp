@@ -3019,10 +3019,9 @@ void World::select_objects_in_area(
                     screenPos.x *= viewportWidth;
                     screenPos.y *= viewportHeight;
 
-                    if (screenPos.x >= selectionBox[0].x
-                        && screenPos.x <= selectionBox[1].x
-                        && screenPos.y >= selectionBox[0].y
-                        && screenPos.y <= selectionBox[1].y)
+                    const glm::vec2 screenPos2D = glm::vec2(screenPos);
+
+                    if (misc::pointInside(screenPos2D, selectionBox))
                     {
                         auto uid = instance->uid;
                         auto modelInstance = _model_instance_storage.get_instance(uid);

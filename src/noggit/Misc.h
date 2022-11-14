@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <glm/vec4.hpp>
+#include <glm/vec2.hpp>
 #include <noggit/Selection.h>
 
 
@@ -37,7 +38,6 @@ namespace misc
   float getShortestDist(glm::vec3 const& pos, glm::vec3 const& square_pos, float unitSize);
   bool square_is_in_circle(float x, float z, float radius, float square_x, float square_z, float square_size);
   bool rectOverlap(glm::vec3 const*, glm::vec3 const*);
-  bool boxOverlap(glm::vec3 const*, glm::vec3 const*);
   // used for angled tools, get the height a point (pos) should be given an origin, angle and orientation
   float angledHeight(glm::vec3 const& origin, glm::vec3 const& pos, math::radians const& angle, math::radians const& orientation);
   void extract_v3d_min_max(glm::vec3 const& point, glm::vec3& min, glm::vec3& max);
@@ -56,6 +56,7 @@ namespace misc
   bool deg_vec3d_equals(math::degrees::vec3 const& v1, math::degrees::vec3 const& v2);
 
   bool pointInside(glm::vec3 point, std::array<glm::vec3, 2> const& extents);
+  bool pointInside(glm::vec2 point, std::array<glm::vec2, 2> const& extents);
   void minmax(glm::vec3* a, glm::vec3* b);
 
   inline int rounded_int_div(int value, int div)

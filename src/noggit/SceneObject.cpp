@@ -26,11 +26,6 @@ bool SceneObject::isInsideRect(std::array<glm::vec3, 2> const* rect) const
   return misc::rectOverlap(extents.data(), rect->data());
 }
 
-bool SceneObject::isInsideBox(std::array<glm::vec3, 2> const* box) const
-{
-    return misc::boxOverlap(extents.data(), box->data());
-}
-
 bool SceneObject::isDuplicateOf(SceneObject const& other)
 {
   auto a_obj_this = instance_model();

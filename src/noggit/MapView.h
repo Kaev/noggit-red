@@ -126,8 +126,7 @@ private:
   float moving, strafing, updown, mousedir, turn, lookat;
   CursorType _cursorType;
   glm::vec3 _cursor_pos;
-  glm::vec3 _drag_start_world;
-  QPoint _drag_start_window;
+  QPoint _drag_start_pos;
   float _cursorRotation;
   bool look, freelook;
   bool ui_hidden = false;
