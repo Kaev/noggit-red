@@ -361,8 +361,10 @@ public:
       bool reset_selection,
       glm::mat4x4 view,
       glm::mat4x4 projection,
-      int viewportWidth,
-      int viewportHeight
+      int viewport_width,
+      int viewport_height,
+      float user_depth,
+      glm::vec3 camera_position
   );
 
 protected:

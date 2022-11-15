@@ -2981,11 +2981,13 @@ void World::select_objects_in_area(
     bool reset_selection,
     glm::mat4x4 view,
     glm::mat4x4 projection,
-    int viewportWidth, 
-    int viewportHeight)
+    int viewport_width, 
+    int viewport_height,
+    float user_depth,
+    glm::vec3 camera_position)
 {
     ZoneScoped;
-
+    
     if (reset_selection)
     {
         this->reset_selection();
@@ -3016,22 +3018,25 @@ void World::select_objects_in_area(
                     screenPos.y = (screenPos.y + 1.0f) / 2.0f;
                     screenPos.y = 1 - screenPos.y;
 
-                    screenPos.x *= viewportWidth;
-                    screenPos.y *= viewportHeight;
-
-                    const glm::vec2 screenPos2D = glm::vec2(screenPos);
-
-                    if (misc::pointInside(screenPos2D, selectionBox))
+                    screenPos.x *= viewport_width;
+                    screenPos.y *= viewport_height;
+                    
+                    auto depth = glm::distance(camera_position, instance->pos);
+                    if (depth <= user_depth)
                     {
-                        auto uid = instance->uid;
-                        auto modelInstance = _model_instance_storage.get_instance(uid);
-                        if (modelInstance && modelInstance.value().index() == eEntry_Object) {
-                            auto obj = std::get<selected_object_type>(modelInstance.value());
-                            auto model_instance = static_cast<ModelInstance*>(obj);
+                        const glm::vec2 screenPos2D = glm::vec2(screenPos);
+                        if (misc::pointInside(screenPos2D, selectionBox))
+                        {
+                            auto uid = instance->uid;
+                            auto modelInstance = _model_instance_storage.get_instance(uid);
+                            if (modelInstance && modelInstance.value().index() == eEntry_Object) {
+                                auto obj = std::get<selected_object_type>(modelInstance.value());
+                                auto model_instance = static_cast<ModelInstance*>(obj);
 
-                            if (!is_selected(obj) && !model_instance->model->is_hidden())
-                            {
-                                this->add_to_selection(obj);
+                                if (!is_selected(obj) && !model_instance->model->is_hidden())
+                                {
+                                    this->add_to_selection(obj);
+                                }
                             }
                         }
                     }
