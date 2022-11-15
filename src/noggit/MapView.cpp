@@ -4910,6 +4910,7 @@ void MapView::mouseMoveEvent (QMouseEvent* event)
 
   if (leftMouse && terrainMode == editing_mode::object && _display_mode == display_mode::in_3D && !ImGuizmo::IsUsing())
   {
+      _needs_redraw = true;
       _area_selection->setGeometry(QRect(_drag_start_pos, event->pos()).normalized());
   }
 
@@ -4984,6 +4985,7 @@ void MapView::mousePressEvent(QMouseEvent* event)
   if (leftMouse && ((terrainMode == editing_mode::object || terrainMode == editing_mode::minimap) && !_mod_ctrl_down))
   {
       _drag_start_pos = event->pos();
+      _needs_redraw = true;
       _area_selection->setGeometry(QRect(_drag_start_pos, QSize()));
       _area_selection->show();
   }
