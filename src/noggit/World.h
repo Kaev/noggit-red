@@ -357,7 +357,7 @@ public:
   unsigned getNumRenderedTiles() const { return _n_rendered_tiles; };
 
   void select_objects_in_area(
-      const std::array<glm::vec2, 2> selectionBox, 
+      const std::array<glm::vec2, 2> selection_box, 
       bool reset_selection,
       glm::mat4x4 view,
       glm::mat4x4 projection,

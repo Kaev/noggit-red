@@ -2977,7 +2977,7 @@ void World::notifyTileRendererOnSelectedTextureChange()
 }
 
 void World::select_objects_in_area(
-    const std::array<glm::vec2, 2> selectionBox, 
+    const std::array<glm::vec2, 2> selection_box, 
     bool reset_selection,
     glm::mat4x4 view,
     glm::mat4x4 projection,
@@ -3025,7 +3025,7 @@ void World::select_objects_in_area(
                     if (depth <= user_depth)
                     {
                         const glm::vec2 screenPos2D = glm::vec2(screenPos);
-                        if (misc::pointInside(screenPos2D, selectionBox))
+                        if (misc::pointInside(screenPos2D, selection_box))
                         {
                             auto uid = instance->uid;
                             auto modelInstance = _model_instance_storage.get_instance(uid);
